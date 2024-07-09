@@ -106,6 +106,22 @@ const deleteSubject = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Subject deleted successfully"));
 });
+const getAllSubjectsbystandard = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const standards = await Standard.find({name:parseInt(id)}).populate("subjects","name");
+  console.log(standards);
+  // if (!subject) {
+  //   throw new ApiError(404, "Subject not found");
+  // }
+
+  // await subject.remove();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {standards}, "Subject deleted successfully"));
+});
+
 
 export {
   createSubject,
@@ -113,4 +129,5 @@ export {
   getSubjectById,
   updateSubject,
   deleteSubject,
+  getAllSubjectsbystandard
 };

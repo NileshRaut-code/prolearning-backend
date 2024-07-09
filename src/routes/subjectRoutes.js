@@ -5,6 +5,8 @@ import {
   getSubjectById,
   updateSubject,
   deleteSubject,
+  getAllSubjectsbystandard
+
 } from '../controllers/subjectController.js';
 import { verifyTeacher } from '../middlewares/teacher.middlewares.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
@@ -13,7 +15,7 @@ const router = express.Router();
 
 router.get('/:id', getSubjectById);
 router.get('/', getAllSubjects);
-
+router.get('/standard/:id', getAllSubjectsbystandard);
 router.post('/',verifyJWT,verifyTeacher, createSubject);
 router.put('/:id',verifyJWT,verifyTeacher, updateSubject);
 router.delete('/:id',verifyJWT,verifyTeacher, deleteSubject);
