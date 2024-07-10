@@ -96,5 +96,5 @@ export const submitChapterTestResult = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, testResult, "Test result submitted successfully"));
+    .json(new ApiResponse(201, testResult, "Test result submitted  successfully"));
 });
