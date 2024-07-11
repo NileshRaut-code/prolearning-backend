@@ -8,7 +8,7 @@ const createChapter = asyncHandler(async (req, res) => {
   const { name, subjectId } = req.body;
 
   if (!name || !subjectId) {
-    throw new ApiError(400, "Name and subjectId are required");
+    throw new ApiError(400, "Name and subject-Id are required");
   }
 
   const subject = await Subject.findById(subjectId);
