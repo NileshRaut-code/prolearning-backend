@@ -41,10 +41,21 @@ const getTopicById = asyncHandler(async (req, res) => {
   if (!topic) {
     throw new ApiError(404, "Topic not found");
   }
+  const chapterId = topic.chapter._id;
+  const chapter = await Chapter.findById(chapterId).populate('subject', 'name');
+  
+
+  const subject = chapter.subject;
+
+  // Add the subject to the topic response
+  const topicWithSubject = {
+    ...topic.toObject(),
+    subject: subject ? { _id: subject._id, name: subject.name } : null
+  };
 
   return res
     .status(200)
-    .json(new ApiResponse(200, topic, "Topic fetched successfully"));
+    .json(new ApiResponse(200, topicWithSubject, "Topic fetched successfully"));
 });
 
 const updateTopic = asyncHandler(async (req, res) => {

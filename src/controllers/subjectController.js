@@ -115,7 +115,7 @@ const getAllSubjectsbystandard = asyncHandler(async (req, res) => {
   //   throw new ApiError(404, "Subject not found");
   // }
 
-  // await subject.remove();
+  // await subject.remove() ;
 
   return res
     .status(200)
