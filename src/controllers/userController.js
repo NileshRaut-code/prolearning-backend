@@ -173,11 +173,15 @@ const logoutUser = asyncHandler(async (req, res) => {
     user.refreshToken = null;
     await user.save();
   }
-
+  const options = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  };
   res
     .status(200)
-    .clearCookie("accessToken")
-    .clearCookie("refreshToken")
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
     .json(new ApiResponse(200, {}, "Logout successful"));
 });
 const getCurrentUser = asyncHandler(async (req, res) => {
