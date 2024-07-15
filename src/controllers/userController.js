@@ -168,11 +168,19 @@ const refreshToken = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (user) {
-    user.refreshToken = null;
-    await user.save();
-  }
+
+
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $unset: {
+        refreshToken: 1,
+      },
+    },
+    {
+      new: true,
+    }
+  );
 
   res
     .status(200)
