@@ -6,8 +6,9 @@ import { User } from "../models/userModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createTest = asyncHandler(async (req, res) => {
-  const { name, questions, createdBy } = req.body;
-
+  const { name, questions } = req.body;
+  const createdBy=req.user._id;
+  console.log(createdBy);
   if (!name || !questions || !createdBy) {
     throw new ApiError(400, "All fields are required");
   }

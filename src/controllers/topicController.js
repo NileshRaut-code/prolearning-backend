@@ -10,7 +10,6 @@ const createTopic = asyncHandler(async (req, res) => {
   if (!name || !chapterId || !description) {
     throw new ApiError(400, "Name and chapterId are required");
   }
-
   const chapter = await Chapter.findById(chapterId);
 
   if (!chapter) {

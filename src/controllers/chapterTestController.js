@@ -98,3 +98,22 @@ export const submitChapterTestResult = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(201, testResult, "Test result submitted successfully"));
 });
+
+
+export const viewChapterTest = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    throw new ApiError(400, "Test ID are required");
+  }
+
+  const chapterTest = await ChapterTest.findById(id).populate('questions');
+  if (!chapterTest) {
+    throw new ApiError(404, "Chapter test not found");
+  }
+
+  
+return res
+  .status(201)
+  .json(new ApiResponse(201, chapterTest, "Test successfully fetch"));
+})
