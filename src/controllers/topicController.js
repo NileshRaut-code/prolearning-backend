@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { Topic } from "../models/topicModel.js";
 import { Chapter } from "../models/chapterModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Subject } from "../models/subjectModel.js";
 
 const createTopic = asyncHandler(async (req, res) => {
   const { name, chapterId ,description } = req.body;
@@ -45,11 +46,13 @@ const getTopicById = asyncHandler(async (req, res) => {
   
 
   const subject = chapter.subject;
+  const standard = await Subject.findById(subject._id).populate('standard', 'name');
+  const standards = standard.standard;
 
   // Add the subject to the topic response
   const topicWithSubject = {
     ...topic.toObject(),
-    subject: subject ? { _id: subject._id, name: subject.name } : null
+    subject: subject ? { _id: subject._id, name: subject.name ,standard:standards.name } : null
   };
 
   return res
