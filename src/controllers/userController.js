@@ -186,7 +186,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken",{ httpOnly: true, secure: true })
     .clearCookie("refreshToken",{ httpOnly: true, secure: true })
-    .json(new ApiResponse(200, {}, "Logout successful"));
+    .json(new ApiResponse(200, {}, "Logout  successful"));
 });
 const getCurrentUser = asyncHandler(async (req, res) => {
   console.log(req.user);
