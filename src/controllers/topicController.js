@@ -166,7 +166,7 @@ const createcomment = asyncHandler(async (req, res) => {
   }
   const comment_data = await Review.create({
     topic_id: id,
-    review_comment: comment,
+    topic_comment: comment,
     createdBy: req.user._id,
   });
   return res
