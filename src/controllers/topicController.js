@@ -145,8 +145,7 @@ const viewcomment = asyncHandler(async (req, res) => {
   console.log(topicdata);
   const reviewdata = await Review.find({
     topic_id: new ObjectId(id),
-  })
-  //.populate({ path: "createdBy", select: "fullName avatar" });
+  }).populate({ path: "createdBy", select: "fullName avatar" });
   return res
     .status(200)
     .json(new ApiResponse(200, { reviewdata }, "reviews comment fetched"));
