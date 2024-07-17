@@ -5,6 +5,7 @@ import { Chapter } from "../models/chapterModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Subject } from "../models/subjectModel.js";
 import { Review } from "../models/reviewModel.js";
+import { ObjectId } from "mongodb";
 
 const createTopic = asyncHandler(async (req, res) => {
   const { name, chapterId ,description } = req.body;
