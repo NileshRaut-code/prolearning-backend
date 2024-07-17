@@ -4,6 +4,7 @@ import { Topic } from "../models/topicModel.js";
 import { Chapter } from "../models/chapterModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Subject } from "../models/subjectModel.js";
+import { Review } from "../models/reviewModel.js";
 
 const createTopic = asyncHandler(async (req, res) => {
   const { name, chapterId ,description } = req.body;
@@ -132,6 +133,46 @@ const linkTopics = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { topic }, "Topics linked successfully"));
 });
 
+const viewcomment = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  console.log(req.body);
+  const topicdata = await Topic.findOne({ _id: new ObjectId(id) });
+  if (!topicdata) {
+    throw new ApiError(404, "No Topic Found");
+  }
+
+  console.log(topicdata);
+  const reviewdata = await Review.find({
+    topic_id: new ObjectId(id),
+  }).populate({ path: "createdBy", select: "fullName avatar" });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { reviewdata }, "reviews comment fetched"));
+  
+
+});
+
+const createcomment = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const comment = req.body.comment;
+  if (!id || !comment ) {
+    throw new ApiError(200, "all feilds are require");
+  }
+  const topicdata = await Topic.findById(id);
+  if (!topicdata) {
+    throw new ApiError(404, "No topic Found");
+  }
+  const comment_data = await Review.create({
+    product_id: id,
+    review_comment: comment,
+    createdBy: req.user._id,
+  });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { comment_data }, "reviews fetched"));
+
+});
+
 export {
   createTopic,
   getAllTopics,
@@ -139,4 +180,6 @@ export {
   updateTopic,
   deleteTopic,
   linkTopics,
+  createcomment,
+  viewcomment
 };
