@@ -136,7 +136,7 @@ const linkTopics = asyncHandler(async (req, res) => {
 
 const viewcomment = asyncHandler(async (req, res) => {
   const id = req.params.id;
-  console.log(req.body);
+  console.log(req.params);
   const topicdata = await Topic.findOne({ _id: new ObjectId(id) });
   if (!topicdata) {
     throw new ApiError(404, "No Topic Found");
@@ -145,7 +145,8 @@ const viewcomment = asyncHandler(async (req, res) => {
   console.log(topicdata);
   const reviewdata = await Review.find({
     topic_id: new ObjectId(id),
-  }).populate({ path: "createdBy", select: "fullName avatar" });
+  })
+  //.populate({ path: "createdBy", select: "fullName avatar" });
   return res
     .status(200)
     .json(new ApiResponse(200, { reviewdata }, "reviews comment fetched"));
@@ -164,7 +165,7 @@ const createcomment = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No topic Found");
   }
   const comment_data = await Review.create({
-    product_id: id,
+    topic_id: id,
     review_comment: comment,
     createdBy: req.user._id,
   });
