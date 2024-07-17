@@ -19,7 +19,7 @@ router.put('/:id',verifyJWT,verifyTeacher, updateTopic);
 router.delete('/:id',verifyJWT,verifyTeacher, deleteTopic);
 router.post('/relatedtopics/',verifyJWT,verifyTeacher,linkTopics );
 router.post('/createcomment/:id',verifyJWT,createcomment)
-router.get('/viewcomment/:id',verifyJWT,viewcomment)
+router.get('/viewcomment/:id',viewcomment)
 // router.post('/createcomment/:id',verifyJWT,)
 // router.post('/createcomment/:id',verifyJWT,)
 export default router;
