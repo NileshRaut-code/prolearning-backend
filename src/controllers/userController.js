@@ -62,11 +62,16 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({
     $or: [{ email }],
-  });
+  })
 
   if (!user) {
     throw new ApiError(404, "User not found");
   }
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+
 
   const isPasswordValid = await user.isPasswordCorrect(password);
   if (!isPasswordValid) {
@@ -86,7 +91,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
-      new ApiResponse(200, { user, accessToken, refreshToken }, "Login successful")
+      new ApiResponse(200, { loggedInUser, accessToken, refreshToken }, "Login successful")
     );
 });
 
