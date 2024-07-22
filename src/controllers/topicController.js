@@ -156,6 +156,7 @@ const viewcomment = asyncHandler(async (req, res) => {
 const createcomment = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const comment = req.body.comment;
+  const title = req.body.title;
   if (!id || !comment ) {
     throw new ApiError(200, "all feilds are require");
   }
@@ -165,6 +166,7 @@ const createcomment = asyncHandler(async (req, res) => {
   }
   const comment_data = await Review.create({
     topic_id: id,
+    title,
     topic_comment: comment,
     createdBy: req.user._id,
   });
