@@ -27,7 +27,7 @@ router.get('/chapter-tests/results/:id', verifyJWT, viewChapterResultid);
 router.get('/chapter-tests/:id',verifyJWT, viewChapterTest);
 router.get('/chapter-tests/chapter/:chapterId',verifyJWT, viewChapterTestbychapterid);
 router.get('/chapter-tests/standard/:id',verifyJWT, ViewalltestBystandard);
-router.get('/chapter-tests/subjectwise/:standard/:subject',verifyJWT, ViewalltestBysubject);
+router.get('/chapter-tests/standard/:standard/:subject',verifyJWT, ViewalltestBysubject);
 
 
 
