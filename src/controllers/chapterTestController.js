@@ -132,11 +132,45 @@ export const viewChapterTestbychapterid = asyncHandler(async (req, res) => {
   if (!chapterTest) {
     throw new ApiError(404, "Chapter test not found");
   }
-
-  
-
-  
 return res
   .status(201)
   .json(new ApiResponse(201, chapterTest, "Test successfully fetch"));
+})
+
+
+export const viewChapterResultid = asyncHandler(async (req, res) => {
+  const {id}=req.params;
+  if (!id) {
+    throw new ApiError(400, "Test ID are required");
+  }
+  const TestResult=await ChapterTestResult.findById(id)
+  .populate({
+    path: 'recommendations',
+    populate: {
+      path: 'topicId',
+      model: 'Topic'
+    }
+  });
+
+
+  if (!TestResult) {
+    throw new ApiError(404, " test reuslt not found");
+  }
+
+  const uniqueRecommendations = [];
+  const seenTopics = new Set();
+
+  TestResult.recommendations.forEach(rec => {
+    if (!seenTopics.has(rec.topicId._id.toString())) {
+      seenTopics.add(rec.topicId._id.toString());
+      uniqueRecommendations.push(rec);
+    }
+  });
+
+  // Replace recommendations with unique recommendations
+  TestResult.recommendations = uniqueRecommendations;
+
+  return res
+  .status(201)
+  .json(new ApiResponse(201, TestResult, "Test Result successfully fetch"));
 })
