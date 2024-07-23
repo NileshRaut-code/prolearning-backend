@@ -5,8 +5,9 @@ import {
   getChapterById,
   updateChapter,
   deleteChapter,
+  
 } from '../controllers/chapterController.js';
-import { createChapterTest,submitChapterTestResult,viewChapterTest } from '../controllers/chapterTestController.js';
+import { createChapterTest,submitChapterTestResult,viewChapterTest,viewChapterTestbychapterid } from '../controllers/chapterTestController.js';
 import { verifyTeacher } from '../middlewares/teacher.middlewares.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 const router = express.Router();
@@ -22,6 +23,7 @@ router.delete('/:id',verifyJWT,verifyTeacher, deleteChapter);
 router.post('/chapter-tests', verifyJWT, createChapterTest);
 router.post('/chapter-tests/results', verifyJWT, submitChapterTestResult);
 router.get('/chapter-tests/:id',verifyJWT, viewChapterTest);
+router.get('/chapter-tests/chapter/:chapterId',verifyJWT, viewChapterTestbychapterid);
 
 
 

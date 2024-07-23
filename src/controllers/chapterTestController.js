@@ -112,6 +112,29 @@ export const viewChapterTest = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Chapter test not found");
   }
 
+
+
+  
+return res
+  .status(201)
+  .json(new ApiResponse(201, chapterTest, "Test successfully fetch"));
+})
+
+
+export const viewChapterTestbychapterid = asyncHandler(async (req, res) => {
+  const { chapterId } = req.params;
+
+  if (!chapterId) {
+    throw new ApiError(400, "Test ID are required");
+  }
+
+  const chapterTest = await ChapterTest.find({chapterId:chapterId}).populate('questions');
+  if (!chapterTest) {
+    throw new ApiError(404, "Chapter test not found");
+  }
+
+  
+
   
 return res
   .status(201)
