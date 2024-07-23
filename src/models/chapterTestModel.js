@@ -7,6 +7,10 @@ const chapterTestSchema = new Schema({
       ref: "Chapter",
       required: true
     },
+    standard: {
+      type:Number,
+      required: true
+    },
     testName: {
       type: String,
       required: true

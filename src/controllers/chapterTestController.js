@@ -7,6 +7,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 import { ChapterTestResult } from "../models/chapterTestResultModel.js";
 import { Recommendation } from "../models/recommendation.model.js";
+import { Subject } from "../models/subjectModel.js";
 
 const getRandomQuestions = (questions, number) => {
   let shuffled = questions.sort(() => 0.5 - Math.random());
@@ -33,8 +34,9 @@ export const createChapterTest = asyncHandler(async (req, res) => {
       questions = questions.concat(getRandomQuestions(topicQuestions, questionsPerTopic));
     }
   }
-
-  const chapterTest = await ChapterTest.create({ chapterId, testName, questions });
+  const chapterfind = await Chapter.findById(chapterId);
+  const standard = await Subject.findById(chapterfind.subject).populate('standard');
+  const chapterTest = await ChapterTest.create({ chapterId, testName, questions ,standard:standard.standard.name});
 
   return res
     .status(201)
@@ -173,4 +175,14 @@ export const viewChapterResultid = asyncHandler(async (req, res) => {
   return res
   .status(201)
   .json(new ApiResponse(201, TestResult, "Test Result successfully fetch"));
+})
+
+
+export const ViewalltestBystandard = asyncHandler(async (req, res) => {
+  const {id}=req.params;
+  const chapter = await ChapterTest.find({standard:id});
+  console.log(chapter);
+  return res
+  .status(201)
+  .json(new ApiResponse(201, "Test Result successfully fetch"));
 })
