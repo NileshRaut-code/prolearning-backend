@@ -11,6 +11,10 @@ const chapterTestSchema = new Schema({
       type:Number,
       required: true
     },
+    subject: {
+      type:String,
+      required: true
+    },
     testName: {
       type: String,
       required: true
