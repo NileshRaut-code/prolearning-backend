@@ -12,6 +12,7 @@ const userSchema = new Schema(
       trim: true,
       index: true,
     },
+
     email: {
       type: String,
       required: true,
@@ -24,6 +25,10 @@ const userSchema = new Schema(
       required: true,
       trim: true,
       index: true,
+    },
+    standard: {
+      type: Number,
+      default:10
     },
     role: {
       type: String,
