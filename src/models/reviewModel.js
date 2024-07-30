@@ -1,24 +1,55 @@
-import mongoose, { Mongoose, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const reviewSchema = new Schema(
   {
     topic_id: {
       type: String,
-      require: true,
+      required: true,
     },
     topic_comment: {
       type: String,
-      require: true,
+      required: true,
     },
     title: {
       type: String,
-      require: true,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      require: true,
+      required: true,
     },
+    replies: [
+      {
+        replies_id: {
+          type: String,
+          required: true,
+        },
+        topic_comment: {
+          type: String,
+          required: true,
+        },
+        title: {
+          type: String,
+        },
+        createdBy: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        upvotes: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+          }
+        ]
+      }
+    ],
+    upvotes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ]
   },
   {
     timestamps: true,

@@ -145,7 +145,7 @@ const viewcomment = asyncHandler(async (req, res) => {
   console.log(topicdata);
   const reviewdata = await Review.find({
     topic_id: new ObjectId(id),
-  }).populate({ path: "createdBy", select: "fullName avatar" });
+  }).populate({ path: "createdBy", select: "fullName avatar" }).populate({ path: "replies.createdBy", select: "fullName avatar" });
   return res
     .status(200)
     .json(new ApiResponse(200, { reviewdata }, "reviews comment fetched"));
@@ -176,6 +176,62 @@ const createcomment = asyncHandler(async (req, res) => {
 
 });
 
+export const toggleUpvote = asyncHandler(async (req, res) => {
+  const { reviewId } = req.params;
+  const userId = req.user._id;
+
+  const review = await Review.findById(reviewId);
+
+  if (!review) {
+    throw new ApiError(404, "Review not found");
+  }
+
+  const userIndex = review.upvotes.indexOf(userId);
+
+  if (userIndex === -1) {
+    review.upvotes.push(userId); // Add upvote
+  } else {
+    review.upvotes.splice(userIndex, 1); // Remove upvote
+  }
+
+  await review.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, review, "Upvote toggled successfully"));
+});
+
+
+export const addReplyToComment = asyncHandler(async (req, res) => {
+  const { commentId } = req.params;
+  const { topic_comment, title } = req.body;
+  const userId = req.user._id;
+
+  if (!topic_comment) {
+    throw new ApiError(400, "topic_comment is required");
+  }
+
+  const parentComment = await Review.findById(commentId);
+
+  if (!parentComment) {
+    throw new ApiError(404, "Comment not found");
+  }
+
+  const reply = {
+    replies_id: parentComment.topic_id,
+    topic_comment,
+    title,
+    createdBy: userId,
+    upvotes: []
+  };
+
+  parentComment.replies.push(reply);
+  await parentComment.save();
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, reply, "Reply added successfully"));
+});
 export {
   createTopic,
   getAllTopics,
