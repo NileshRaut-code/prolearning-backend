@@ -4,7 +4,7 @@ import {
   getAllTopics,
   getTopicById,
   updateTopic,
-  deleteTopic,linkTopics,viewcomment,createcomment,addReplyToComment,toggleUpvote
+  deleteTopic,linkTopics,viewcomment,createcomment,addReplyToComment,toggleUpvote,subtoggleUpvote
 } from '../controllers/topicController.js';
 import { verifyTeacher } from '../middlewares/teacher.middlewares.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
@@ -22,6 +22,7 @@ router.post('/createcomment/:id',verifyJWT,createcomment)
 router.get('/viewcomment/:id',viewcomment)
 router.post("/:commentId/replies", verifyJWT, addReplyToComment);
 router.post("/:reviewId/upvote", verifyJWT, toggleUpvote);
+router.post("/:reviewId/subupvote", verifyJWT, subtoggleUpvote);
 // router.post('/createcomment/:id',verifyJWT,)
 // router.post('/createcomment/:id',verifyJWT,)
 export default router;
