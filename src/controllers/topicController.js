@@ -204,13 +204,13 @@ export const subtoggleUpvote = asyncHandler(async (req, res) => {
   const { replies_id } = req.params;
   const userId = req.user._id;
 
-  const review = await Review.findOne({ "replies.replies_id": replies_id });
+  const review = await Review.findOne({ "replies._id": replies_id });
 
   if (!review) {
     throw new Error("Review not found");
   }
-
-  const reply = review.replies.find(reply => reply.replies_id === replies_id);
+  // console.log(review,replies_id.toString());
+  const reply = review.replies.find(reply => reply._id == replies_id.toString());
   if (!reply) {
     throw new Error("Reply not found");
   }
