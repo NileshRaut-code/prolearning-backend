@@ -22,7 +22,7 @@ router.post('/createcomment/:id',verifyJWT,createcomment)
 router.get('/viewcomment/:id',viewcomment)
 router.post("/:commentId/replies", verifyJWT, addReplyToComment);
 router.post("/:reviewId/upvote", verifyJWT, toggleUpvote);
-router.post("/:reviewId/subupvote", verifyJWT, subtoggleUpvote);
+router.post("/:replies_id/subupvote", verifyJWT, subtoggleUpvote);
 // router.post('/createcomment/:id',verifyJWT,)
 // router.post('/createcomment/:id',verifyJWT,)
 export default router;

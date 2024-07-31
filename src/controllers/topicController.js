@@ -201,7 +201,7 @@ export const toggleUpvote = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, review, "Upvote toggled successfully"));
 });
 export const subtoggleUpvote = asyncHandler(async (req, res) => {
-  const { reviewId } = req.params;
+  const { replies_id } = req.params;
   const userId = req.user._id;
 
   const review = await Review.findOne({ "replies.replies_id": replies_id });
