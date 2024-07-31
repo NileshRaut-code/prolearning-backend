@@ -204,21 +204,27 @@ export const subtoggleUpvote = asyncHandler(async (req, res) => {
   const { reviewId } = req.params;
   const userId = req.user._id;
 
-  const review = await Review.findById(reviewId);
+  const review = await Review.findOne({ "replies.replies_id": replies_id });
 
   if (!review) {
-    throw new ApiError(404, "Review not found");
+    throw new Error("Review not found");
   }
 
-  const userIndex = review.upvotes.indexOf(userId);
+  const reply = review.replies.find(reply => reply.replies_id === replies_id);
+  if (!reply) {
+    throw new Error("Reply not found");
+  }
+
+  const userIndex = reply.upvotes.indexOf(userId);
 
   if (userIndex === -1) {
-    review.upvotes.push(userId); // Add upvote
+    reply.upvotes.push(userId); // Add upvote
   } else {
-    review.upvotes.splice(userIndex, 1); // Remove upvote
+    reply.upvotes.splice(userIndex, 1); // Remove upvote
   }
 
   await review.save();
+
 
   return res
     .status(200)
