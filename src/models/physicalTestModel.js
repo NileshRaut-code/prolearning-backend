@@ -6,9 +6,6 @@ const physicalTestSchema = new Schema(
       type: String,
       required: true,
     },
-    description: {
-      type: String,
-    },
     teacher: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -21,7 +18,12 @@ const physicalTestSchema = new Schema(
     ],
     dueDate: {
       type: Date,
+      
     },
+    score:{
+      type:Number,
+      required:true
+    }
   },
   {
     timestamps: true,
