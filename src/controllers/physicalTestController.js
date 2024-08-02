@@ -4,8 +4,8 @@ import { PhysicalTest } from "../models/physicalTestModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createPhysicalTest = asyncHandler(async (req, res) => {
-  const { name, description, teacherId, questions, dueDate } = req.body;
-
+  const { name, description, teacherId, questions, dueDate,score } = req.body;
+  console.log(req.body);
   if (!name || !teacherId) {
     throw new ApiError(400, "Name and teacherId are required");
   }
@@ -16,6 +16,7 @@ const createPhysicalTest = asyncHandler(async (req, res) => {
     teacher: teacherId,
     questions,
     dueDate,
+    score
   });
 
   return res

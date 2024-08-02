@@ -4,6 +4,7 @@ const subjectSchema = new Schema(
       name: {
         type: String,
         required: true,
+        
       },
       standard: {
         type: Schema.Types.ObjectId,

@@ -13,12 +13,22 @@ const physicalTestSchema = new Schema(
     },
     questions: [
       {
-        type: String,
+        question:{
+          type: String,
+        },
+        topicId:{
+          type: String,
+        },
+        score:{
+          type:Number
+        }
+
+      
       },
     ],
     dueDate: {
       type: Date,
-      
+
     },
     score:{
       type:Number,

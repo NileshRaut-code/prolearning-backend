@@ -7,7 +7,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createSubject = asyncHandler(async (req, res) => {
   const { name, standardId, teacherId } = req.body;
-
+  console.log(req.body);
   if (!name || !standardId || !teacherId) {
     throw new ApiError(400, "Name, standardId, and teacherId are required");
   }

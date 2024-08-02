@@ -5,10 +5,10 @@ import { Subject } from "../models/subjectModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createChapter = asyncHandler(async (req, res) => {
-  const { name, subjectId } = req.body;
+  const { name, subjectId,teacherId } = req.body;
 
-  if (!name || !subjectId) {
-    throw new ApiError(400, "Name and subject-Id are required");
+  if (!name || !subjectId || !teacherId) {
+    throw new ApiError(400, "Name and subject-Id , teacherId are required");
   }
 
   const subject = await Subject.findById(subjectId);
@@ -17,7 +17,7 @@ const createChapter = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Subject not found");
   }
 
-  const chapter = await Chapter.create({ name, subject: subjectId });
+  const chapter = await Chapter.create({ name, subject: subjectId ,teacher:teacherId });
   subject.chapters.push(chapter._id);
   await subject.save();
   return res
