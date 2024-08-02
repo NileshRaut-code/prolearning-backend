@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPhysicalTest,getPhysicalTestById,getPhysicalTests } from '../controllers/physicalTestController.js';
+import { createPhysicalTest,getPhysicalTestById,getPhysicalTests,getAllChaptersbystd,ViewalltestBystandard,ViewalltestBysubject } from '../controllers/physicalTestController.js';
 import { submitAnswerCopy,gradeAnswerCopy,getAnswerCopy } from '../controllers/physicalAnswerController.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 
@@ -21,6 +21,9 @@ const upload = multer();
 
 router.post("/physical-tests", verifyJWT, createPhysicalTest);
 router.get("/physical-tests", verifyJWT, getPhysicalTests);
+router.get("/physical-tests/:std", verifyJWT, getAllChaptersbystd);
+router.get('/physical-tests/standard/:id',verifyJWT, ViewalltestBystandard);
+router.get('/physical-tests/standard/:standard/:subject',verifyJWT, ViewalltestBysubject);
 router.get("/physical-tests/:testId", verifyJWT, getPhysicalTestById);
 
 // Routes for physical answer copies

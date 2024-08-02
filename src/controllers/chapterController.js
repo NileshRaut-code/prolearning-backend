@@ -25,6 +25,8 @@ const createChapter = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, chapter, "Chapter created successfully"));
 });
 
+
+
 const getAllChapters = asyncHandler(async (req, res) => {
   const chapters = await Chapter.find({}).populate('subject','name');
 
@@ -96,4 +98,6 @@ export {
   getChapterById,
   updateChapter,
   deleteChapter,
+  
+
 };

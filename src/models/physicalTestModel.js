@@ -11,6 +11,14 @@ const physicalTestSchema = new Schema(
       ref: "User",
       required: true,
     },
+    standard: {
+      type:Number,
+      required: true
+    },
+    subject: {
+      type:String,
+      required: true
+    },
     questions: [
       {
         question:{
