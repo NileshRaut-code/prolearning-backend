@@ -36,8 +36,6 @@ const createPhysicalTest = asyncHandler(async (req, res) => {
 export const ViewalltestBystandard = asyncHandler(async (req, res) => {
   const {id}=req.params;
   const standardTest = await PhysicalTest.find({standard:id});
-
-
   return res
   .status(201)
   .json(new ApiResponse(201,standardTest, "Test Result successfully fetch"));

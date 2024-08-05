@@ -21,7 +21,7 @@ const upload = multer();
 
 router.post("/physical-tests", verifyJWT, createPhysicalTest);
 router.get("/physical-tests", verifyJWT, getPhysicalTests);
-router.get("/physical-tests/:std", verifyJWT, getAllChaptersbystd);
+// router.get("/physical-tests/:std", verifyJWT, getAllChaptersbystd);
 router.get('/physical-tests/standard/:id',verifyJWT, ViewalltestBystandard);
 router.get('/physical-tests/standard/:standard/:subject',verifyJWT, ViewalltestBysubject);
 router.get("/physical-tests/:testId", verifyJWT, getPhysicalTestById);
