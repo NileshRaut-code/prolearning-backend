@@ -37,7 +37,7 @@ const submitAnswerCopy = asyncHandler(async (req, res) => {
 
   if (submission) {
     // Update the existing submission
-    submission.pdfUrl = pdfUrl;
+    submission.pdfUrl = pdfUploadResult.url;
     submission.updatedAt = new Date();
   } else {
     // Create a new submission
