@@ -89,16 +89,31 @@ export const submitChapterTestResult = asyncHandler(async (req, res) => {
 
   const recommendations = await generateRecommendations(studentId, chapterTest.questions, answers);
 
-  const testResult = await ChapterTestResult.create({
-    testId,
-    studentId,
-    score,
-    recommendations
-  });
+  let submission = await ChapterTestResult.findOne({ test: testId, student: studentId });
+
+  if (submission) {
+    // Update the existing submission
+    submission.recommendations = recommendations;
+    submission.score = score;
+    submission.updatedAt = new Date();
+  } else {
+    // Create a new submission
+    submission = await ChapterTestResult.create({
+      testId,
+      studentId,
+      score,
+      recommendations
+    });
+  }
+
+  await submission.save();
+
+
+
 
   return res
     .status(201)
-    .json(new ApiResponse(201, testResult, "Test result submitted successfully"));
+    .json(new ApiResponse(201, submission, "Test result submitted successfully"));
 });
 
 

@@ -32,16 +32,36 @@ const submitAnswerCopy = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Test not found");
   }
   
-  const answerCopy = await PhysicalAnswerCopy.create({
-    student: studentId,
-    teacher: teacherId,
-    test: testId,
-    pdfPath: pdfUploadResult.url,
-  });
+
+  let submission = await PhysicalAnswerCopy.findOne({ test: testId, student: studentId });
+
+  if (submission) {
+    // Update the existing submission
+    submission.pdfUrl = pdfUrl;
+    submission.updatedAt = new Date();
+  } else {
+    // Create a new submission
+    submission = await PhysicalAnswerCopy.create({
+      student: studentId,
+      teacher: teacherId,
+      test: testId,
+      pdfPath: pdfUploadResult.url,
+    });
+  }
+
+  await submission.save();
+
+
+  // const answerCopy = await PhysicalAnswerCopy.create({
+  //   student: studentId,
+  //   teacher: teacherId,
+  //   test: testId,
+  //   pdfPath: pdfUploadResult.url,
+  // });
 
   return res
     .status(201)
-    .json(new ApiResponse(201, answerCopy, "Answer copy submitted successfully"));
+    .json(new ApiResponse(201, submission, "Answer copy submitted successfully"));
 });
 
 const gradeAnswerCopy = asyncHandler(async (req, res) => {
