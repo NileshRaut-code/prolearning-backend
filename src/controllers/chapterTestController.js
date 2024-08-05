@@ -89,8 +89,8 @@ export const submitChapterTestResult = asyncHandler(async (req, res) => {
 
   const recommendations = await generateRecommendations(studentId, chapterTest.questions, answers);
 
-  let submission = await ChapterTestResult.findOne({ test: testId, student: studentId });
-
+  let submission = await ChapterTestResult.findOne({ testId: testId, studentId: studentId });
+  console.log(submission);
   if (submission) {
     // Update the existing submission
     submission.recommendations = recommendations;
