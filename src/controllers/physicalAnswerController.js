@@ -105,6 +105,7 @@ const getAllAnswerCopy = asyncHandler(async (req, res) => {
   
   const answerCopies = await PhysicalAnswerCopy.find()
     .populate('test')
+    .populate('student','name').populate('teacher')
   // Step 2: Manually filter the results based on the standard
   const filteredAnswerCopies = answerCopies.filter(answerCopy => answerCopy.test && answerCopy.test.standard === parseInt(standard));
 
