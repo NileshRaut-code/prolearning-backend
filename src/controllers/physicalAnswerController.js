@@ -88,7 +88,7 @@ const getAnswerCopy = asyncHandler(async (req, res) => {
   const answerCopy = await PhysicalAnswerCopy.findById(answerCopyId)
     .populate("student", "fullName")
     .populate("teacher", "fullName")
-    .populate("test", "name");
+    .populate("test");
 
   if (!answerCopy) {
     throw new ApiError(404, "Answer copy not found");
