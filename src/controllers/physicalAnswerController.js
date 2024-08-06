@@ -99,4 +99,24 @@ const getAnswerCopy = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, answerCopy, "Answer copy fetched successfully"));
 });
 
-export { submitAnswerCopy, gradeAnswerCopy, getAnswerCopy };
+const getAllAnswerCopy = asyncHandler(async (req, res) => {
+  const { standard } = req.params;
+  // const tests = await PhysicalTest.find({ standard: standard }).select('_id');
+  // const testIds = tests.map(test => test._id);
+  // console.log(testIds);
+  // Find all answer copies related to the tests found
+  const answerCopies = await PhysicalAnswerCopy.find({'test.standard':standard})
+  .populate('test')
+  
+    console.log(answerCopies);
+
+  if (!answerCopies) {
+    throw new ApiError(404, "Answer copy not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, answerCopies, "Answer copy fetched successfully"));
+});
+
+export { submitAnswerCopy, gradeAnswerCopy, getAnswerCopy,getAllAnswerCopy };
