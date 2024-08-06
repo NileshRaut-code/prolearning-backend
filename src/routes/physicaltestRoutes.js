@@ -1,6 +1,6 @@
 import express from 'express';
 import { createPhysicalTest,getPhysicalTestById,getPhysicalTests,getAllChaptersbystd,ViewalltestBystandard,ViewalltestBysubject } from '../controllers/physicalTestController.js';
-import { submitAnswerCopy,gradeAnswerCopy,getAnswerCopy, getAllAnswerCopy } from '../controllers/physicalAnswerController.js';
+import { submitAnswerCopy,gradeAnswerCopy,getAnswerCopy, getAllAnswerCopy, getAllAnswerCopysubjectwise, getAllbyteacher } from '../controllers/physicalAnswerController.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 
 import multer from "multer";
@@ -31,6 +31,8 @@ router.post("/answer-copies", verifyJWT, upload.single("pdf"), submitAnswerCopy)
 router.post("/answer-copies/grade", verifyJWT, gradeAnswerCopy);
 router.get("/answer-copies/:answerCopyId", verifyJWT, getAnswerCopy);
 router.get("/answer-copies/standard/:standard", getAllAnswerCopy);
+router.get("/answer-copies/standard/:standard/:subject", getAllAnswerCopysubjectwise);
+router.get("/answer-copies/teacher/:teacherId", getAllbyteacher);
 
 
 export default router;

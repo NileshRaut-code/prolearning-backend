@@ -101,15 +101,32 @@ const getAnswerCopy = asyncHandler(async (req, res) => {
 
 const getAllAnswerCopy = asyncHandler(async (req, res) => {
   const { standard } = req.params;
-  // const tests = await PhysicalTest.find({ standard: standard }).select('_id');
-  // const testIds = tests.map(test => test._id);
-  // console.log(testIds);
-  // Find all answer copies related to the tests found
-  const answerCopies = await PhysicalAnswerCopy.find({'test.standard':standard})
-  .populate('test')
+  console.log(standard);
   
-    console.log(answerCopies);
+  const answerCopies = await PhysicalAnswerCopy.find()
+    .populate('test')
+  // Step 2: Manually filter the results based on the standard
+  const filteredAnswerCopies = answerCopies.filter(answerCopy => answerCopy.test && answerCopy.test.standard === parseInt(standard));
 
+  console.log('Filtered Answer Copies:', answerCopies);
+
+  if (!filteredAnswerCopies) {
+    throw new ApiError(404, "Answer copy not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, filteredAnswerCopies, "Answer copy fetched successfully"));
+});
+
+const getAllbyteacher = asyncHandler(async (req, res) => {
+  const { teacherId } = req.params;
+  
+  
+  const answerCopies = await PhysicalAnswerCopy.find({teacher:teacherId})
+  
+  console.log(answerCopies,teacherId);
+  
   if (!answerCopies) {
     throw new ApiError(404, "Answer copy not found");
   }
@@ -119,4 +136,25 @@ const getAllAnswerCopy = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, answerCopies, "Answer copy fetched successfully"));
 });
 
-export { submitAnswerCopy, gradeAnswerCopy, getAnswerCopy,getAllAnswerCopy };
+const getAllAnswerCopysubjectwise = asyncHandler(async (req, res) => {
+  const { standard } = req.params;
+  const { subject } = req.params;
+  console.log(standard);
+  
+  const answerCopies = await PhysicalAnswerCopy.find()
+    .populate('test')
+  // Step 2: Manually filter the results based on the standard
+  const filteredAnswerCopies = answerCopies.filter(answerCopy => answerCopy.test && answerCopy.test.standard === parseInt(standard) && answerCopy.test.subject === subject);
+
+  console.log('Filtered Answer Copies:', answerCopies);
+
+  if (!filteredAnswerCopies) {
+    throw new ApiError(404, "Answer copy not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, filteredAnswerCopies, "Answer copy fetched successfully"));
+});
+
+export { submitAnswerCopy, gradeAnswerCopy, getAnswerCopy,getAllAnswerCopy ,getAllAnswerCopysubjectwise,getAllbyteacher };
