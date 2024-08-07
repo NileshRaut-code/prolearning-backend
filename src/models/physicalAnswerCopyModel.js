@@ -29,7 +29,7 @@ const physicalAnswerCopySchema = new Schema(
       type: Number,
       default: 0
     },
-    questions: [
+    recommendations: [
       {
         questionId:{
           type: String,
