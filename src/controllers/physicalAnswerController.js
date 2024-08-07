@@ -65,7 +65,7 @@ const submitAnswerCopy = asyncHandler(async (req, res) => {
 });
 
 const gradeAnswerCopy = asyncHandler(async (req, res) => {
-  const { answerCopyId, grade, feedback } = req.body;
+  const { answerCopyId, grade, feedback,recommendations } = req.body;
 
   const answerCopy = await PhysicalAnswerCopy.findById(answerCopyId);
 
@@ -75,6 +75,7 @@ const gradeAnswerCopy = asyncHandler(async (req, res) => {
 
   answerCopy.grade = grade;
   answerCopy.feedback = feedback;
+  answerCopy.recommendations = recommendations;
   await answerCopy.save();
 
   return res

@@ -25,6 +25,26 @@ const physicalAnswerCopySchema = new Schema(
       type: String,
       default: "Not graded",
     },
+    score: {
+      type: Number,
+      default: 0
+    },
+    questions: [
+      {
+        questionId:{
+          type: String,
+        },
+
+        score:{
+          type:Number
+        },
+        topicId:{
+          type: String,
+        }
+       
+      
+      },
+    ],
     feedback: {
       type: String,
       default: "",
