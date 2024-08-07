@@ -65,17 +65,18 @@ const submitAnswerCopy = asyncHandler(async (req, res) => {
 });
 
 const gradeAnswerCopy = asyncHandler(async (req, res) => {
-  const { answerCopyId, grade, feedback,recommendations } = req.body;
+  const { answerCopyId, grade, feedback,recommendations,score } = req.body;
 
   const answerCopy = await PhysicalAnswerCopy.findById(answerCopyId);
 
   if (!answerCopy) {
     throw new ApiError(404, "Answer copy not found");
   }
-
+  // answerCopy.pdfPath = pdfPath;
   answerCopy.grade = grade;
   answerCopy.feedback = feedback;
   answerCopy.recommendations = recommendations;
+  answerCopy.score = score;
   await answerCopy.save();
 
   return res
