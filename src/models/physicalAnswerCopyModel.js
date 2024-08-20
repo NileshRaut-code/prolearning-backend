@@ -33,14 +33,18 @@ const physicalAnswerCopySchema = new Schema(
       {
         questionId:{
           type: String,
+          unique:true
         },
 
         score:{
           type:Number
         },
-        topicId:{
-          type: String,
-        }
+        topicId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Topic", // Reference to the Topic model
+          unique: true,
+        },
+
        
       
       },

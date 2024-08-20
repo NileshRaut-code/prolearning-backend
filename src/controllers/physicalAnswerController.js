@@ -94,7 +94,8 @@ const getAnswerCopy = asyncHandler(async (req, res) => {
   const answerCopy = await PhysicalAnswerCopy.findById(answerCopyId)
     .populate("student", "fullName")
     .populate("teacher", "fullName")
-    .populate("test");
+    .populate("test")
+    // .populate("recommendations.topicId")
 
   if (!answerCopy) {
     throw new ApiError(404, "Answer copy not found");
@@ -104,6 +105,27 @@ const getAnswerCopy = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, answerCopy, "Answer copy fetched successfully"));
 });
+
+const getAnswerCopyResult = asyncHandler(async (req, res) => {
+  const { answerCopyId } = req.params;
+
+  const answerCopy = await PhysicalAnswerCopy.findById(answerCopyId)
+    .populate("student", "fullName")
+    .populate("teacher", "fullName")
+    .populate("test")
+    .populate('recommendations.topicId',"name")
+    // .populate("recommendations.topicId")
+
+  if (!answerCopy) {
+    throw new ApiError(404, "Answer copy not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, answerCopy, "Answer copy fetched successfully"));
+});
+
+
 
 const getAllAnswerCopy = asyncHandler(async (req, res) => {
   const { standard } = req.params;
@@ -164,4 +186,4 @@ const getAllAnswerCopysubjectwise = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, filteredAnswerCopies, "Answer copy fetched successfully"));
 });
 
-export { submitAnswerCopy, gradeAnswerCopy, getAnswerCopy,getAllAnswerCopy ,getAllAnswerCopysubjectwise,getAllbyteacher };
+export { submitAnswerCopy,getAnswerCopyResult, gradeAnswerCopy, getAnswerCopy,getAllAnswerCopy ,getAllAnswerCopysubjectwise,getAllbyteacher };
