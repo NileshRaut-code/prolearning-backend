@@ -88,6 +88,22 @@ const gradeAnswerCopy = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, answerCopy, "Answer copy graded successfully"));
 });
 
+const alreadycheck = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  console.log( req.user);
+  
+  const answerCopy = await PhysicalAnswerCopy.findOne({ test: id, student: req.user._id });
+
+  // .populate("recommendations.topicId")
+
+  if (!answerCopy) {
+    throw new ApiError(404, "Answer copy not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, answerCopy, "Answer copy fetched successfully"));
+});
 const getAnswerCopy = asyncHandler(async (req, res) => {
   const { answerCopyId } = req.params;
 
@@ -186,4 +202,4 @@ const getAllAnswerCopysubjectwise = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, filteredAnswerCopies, "Answer copy fetched successfully"));
 });
 
-export { submitAnswerCopy,getAnswerCopyResult, gradeAnswerCopy, getAnswerCopy,getAllAnswerCopy ,getAllAnswerCopysubjectwise,getAllbyteacher };
+export { submitAnswerCopy,getAnswerCopyResult,alreadycheck, gradeAnswerCopy, getAnswerCopy,getAllAnswerCopy ,getAllAnswerCopysubjectwise,getAllbyteacher };
