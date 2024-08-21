@@ -64,7 +64,7 @@ const getTopicById = asyncHandler(async (req, res) => {
 
 const updateTopic = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, chapterId } = req.body;
+  const { name, description } = req.body;
 
   const topic = await Topic.findById(id);
 
@@ -72,16 +72,16 @@ const updateTopic = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Topic not found");
   }
 
-  if (chapterId) {
-    const chapter = await Chapter.findById(chapterId);
-    if (!chapter) {
-      throw new ApiError(404, "Chapter not found");
-    }
-    topic.chapter = chapterId;
-  }
+  // if (chapterId) {
+  //   const chapter = await Chapter.findById(chapterId);
+  //   if (!chapter) {
+  //     throw new ApiError(404, "Chapter not found");
+  //   }
+  //   topic.chapter = chapterId;
+  // }
 
-  topic.name = name || topic.name;
-
+  topic.name = name ;
+  topic.description = description;
   const updatedTopic = await topic.save();
 
   return res
