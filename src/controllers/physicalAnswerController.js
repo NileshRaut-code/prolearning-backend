@@ -66,9 +66,9 @@ const submitAnswerCopy = asyncHandler(async (req, res) => {
 
 const gradeAnswerCopy = asyncHandler(async (req, res) => {
   const { answerCopyId, grade, feedback,recommendations,score } = req.body;
-  console.log(recommendations);
+  console.log("score",score);
   
-  if (!answerCopyId || !grade ||  !feedback || !recommendations || !score) {
+  if (!answerCopyId || !grade || !recommendations) {
     throw new ApiError(404, "All Field are required");
   }
   const answerCopy = await PhysicalAnswerCopy.findById(answerCopyId);

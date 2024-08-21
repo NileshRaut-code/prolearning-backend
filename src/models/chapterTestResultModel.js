@@ -13,7 +13,7 @@ const chapterTestResultSchema = new Schema({
     },
     score: {
       type: Number,
-      required: true
+      
     },
     recommendations: [{
       type: mongoose.Schema.Types.ObjectId,
