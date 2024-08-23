@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPhysicalTest,getPhysicalTestById,getPhysicalTests,getAllChaptersbystd,ViewalltestBystandard,ViewalltestBysubject } from '../controllers/physicalTestController.js';
+import { createPhysicalTest,getPhysicalTestById,getPhysicalTests,getAllChaptersbystd,ViewalltestBystandard,ViewalltestBysubject ,createPhysicalTestfromlistquestion} from '../controllers/physicalTestController.js';
 import { submitAnswerCopy,gradeAnswerCopy,getAnswerCopy, getAllAnswerCopy, getAllAnswerCopysubjectwise, getAllbyteacher, getAnswerCopyResult,alreadycheck } from '../controllers/physicalAnswerController.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 
