@@ -33,6 +33,50 @@ const createPhysicalTest = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, test, "Physical test created successfully"));
 });
 
+export const createPhysicalTestfromlistquestion=asyncHandler(async(req,res)=>{
+  const { topicIds, questionsPerTopic, totalTopics, testName, teacherId, standard, subject, dueDate, score } = req.body;
+
+  if (!topicIds || !questionsPerTopic || !totalTopics || !testName || !teacherId || !standard || !subject || !score) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  let questions = [];
+
+  for (let i = 0; i < totalTopics; i++) {
+    const topicId = topicIds[i];
+
+    const topicQuestions = await PhysicalTest.aggregate([
+      { $unwind: "$questions" },
+      { $match: { "questions.topicId": topicId } },
+      { $sample: { size: questionsPerTopic } }
+    ]);
+
+    if (topicQuestions.length === 0) {
+      throw new ApiError(404, `No questions found for topic ID: ${topicId}`);
+    }
+
+    questions = questions.concat(topicQuestions.map(q => ({
+      question: q.questions.question,
+      topicId: q.questions.topicId,
+      score: q.questions.score,
+    })));
+  }
+
+  const newTest = await PhysicalTest.create({
+    name: testName,
+    teacher: teacherId,
+    standard: standard,
+    subject: subject,
+    questions: questions,
+    dueDate: dueDate,
+    score: score
+  });
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, newTest, "Test created successfully using existing questions"));
+});
+
 export const ViewalltestBystandard = asyncHandler(async (req, res) => {
   const {id}=req.params;
   const standardTest = await PhysicalTest.find({standard:id});
