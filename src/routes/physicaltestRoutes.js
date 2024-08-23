@@ -20,7 +20,7 @@ const router = express.Router();
 const upload = multer();
 
 router.post("/physical-tests", verifyJWT, createPhysicalTest);
-router.post("/physical-tests/autogenrated", verifyJWT, createPhysicalTestfromlistquestion);
+router.post("/physical-tests/auto/genrated", verifyJWT, createPhysicalTestfromlistquestion);
 
 router.get("/physical-tests", verifyJWT, getPhysicalTests);
 // router.get("/physical-tests/:std", verifyJWT, getAllChaptersbystd);
