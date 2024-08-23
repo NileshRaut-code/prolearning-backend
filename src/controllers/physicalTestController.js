@@ -41,6 +41,7 @@ export const createPhysicalTestfromlistquestion=asyncHandler(async(req,res)=>{
   }
 
   let questions = [];
+  let seenQuestions = new Set();
 
   for (let i = 0; i < topicIds.length; i++) {
     const topicId = topicIds[i];
@@ -55,11 +56,19 @@ export const createPhysicalTestfromlistquestion=asyncHandler(async(req,res)=>{
     //   throw new ApiError(404, `No questions found for topic ID: ${topicId}`);
     // }
 
-    questions = questions.concat(topicQuestions.map(q => ({
-      question: q.questions.question,
-      topicId: q.questions.topicId,
-      score: q.questions.score,
-    })));
+    topicQuestions.forEach(q => {
+      const questionText = q.questions.question;
+      const questionKey = `${questionText}-${q.questions.topicId}`; // Create a unique key for each question
+
+      if (!seenQuestions.has(questionKey)) {
+        seenQuestions.add(questionKey);
+        questions.push({
+          question: questionText,
+          topicId: q.questions.topicId,
+          score: q.questions.score,
+        });
+      }
+    });
   }
 
   return res
