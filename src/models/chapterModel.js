@@ -14,7 +14,7 @@ const chapterSchema = new Schema(
       teacher: {
         type: Schema.Types.ObjectId,
         ref: "User",
-        required: true,
+        
       },
       topics: [
         {

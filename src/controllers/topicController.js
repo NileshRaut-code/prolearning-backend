@@ -19,7 +19,7 @@ const createTopic = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Chapter not found");
   }
 
-  const topic = await Topic.create({ name,description, chapter: chapterId });
+  const topic = await Topic.create({ name,description, chapter: chapterId,teacher:req.user._id });
   chapter.topics.push(topic._id);
   await chapter.save();
   return res
