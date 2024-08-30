@@ -5,12 +5,12 @@ import {
   getReportsByStudent,
  
 } from '../controllers/reportController.js';
-
+import { verifyJWT } from '../middlewares/auth.middlewares.js';
 const router = express.Router();
 
 router.post('/', createReport);
 router.get('/studentss/:studentId', getReportsByStudent);
-router.get('/s/:studentId', getallresultofstudent);
+router.get('/s/:studentId', verifyJWT,getallresultofstudent);
 
 
 export default router;
