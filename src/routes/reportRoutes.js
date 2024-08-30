@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   createReport,
+  getallresultofstudent,
   getReportsByStudent,
  
 } from '../controllers/reportController.js';
@@ -8,6 +9,8 @@ import {
 const router = express.Router();
 
 router.post('/', createReport);
-router.get('/student/:studentId', getReportsByStudent);
+router.get('/studentss/:studentId', getReportsByStudent);
+router.get('/s/:studentId', getallresultofstudent);
+
 
 export default router;

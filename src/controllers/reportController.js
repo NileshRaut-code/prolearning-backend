@@ -5,6 +5,8 @@ import { User } from "../models/userModel.js";
 import { Topic } from "../models/topicModel.js";
 import { Test } from "../models/testModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { ChapterTestResult } from "../models/chapterTestResultModel.js";
+import { PhysicalAnswerCopy } from "../models/physicalAnswerCopyModel.js";
 
 const createReport = asyncHandler(async (req, res) => {
   const { studentId, topicId, testId, score, feedback } = req.body;
@@ -121,8 +123,26 @@ const getReportsByStudent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, reports, "Reports fetched successfully"));
 });
 
+
+
+const  getallresultofstudent=asyncHandler(async (req,res)=>{
+  const { studentId } = req.params;
+  if (!studentId) {
+    throw new ApiError(400, "Student ID is required");
+  }
+
+  const mcqresult=await ChapterTestResult.find({studentId}).populate('testId')
+  // console.log("mcqresult");
+  const physicaltest=await PhysicalAnswerCopy.find({student:studentId}).populate('test')
+
+  res.send({physicaltest,mcqresult})
+  
+
+})
+
+
 export {
-  createReport,
+  createReport,getallresultofstudent,
   getAllReports,
   getReportById,
   updateReport,
