@@ -10,7 +10,8 @@ const router = express.Router();
 
 router.post('/', createReport);
 router.get('/studentss/:studentId', getReportsByStudent);
-router.get('/s/:studentId', verifyJWT,getallresultofstudent);
+//verifyJWT
+router.get('/s/:studentId',verifyJWT, getallresultofstudent);
 
 
 export default router;
