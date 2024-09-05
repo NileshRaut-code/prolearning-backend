@@ -41,7 +41,11 @@ const physicalTestSchema = new Schema(
     score:{
       type:Number,
       required:true
-    }
+    },
+    classroom: {
+      type: Schema.Types.ObjectId,
+      ref: "Classroom",
+    },
   },
   {
     timestamps: true,

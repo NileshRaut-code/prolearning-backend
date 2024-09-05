@@ -35,6 +35,7 @@ import testRoutes from './routes/testRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import physicaltestRoutes from './routes/physicaltestRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
+import classroomRoutes from './routes/classroomRoutes.js'
 // app.use("/api/v1/users", userRouter);
 app.use('/api/users', userRoutes);
 app.use('/api/standards', standardRoutes);
@@ -47,5 +48,6 @@ app.use('/api/tests', testRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/physicaltest', physicaltestRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/classroom', classroomRoutes);
 
 export { app };

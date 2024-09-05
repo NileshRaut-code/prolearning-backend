@@ -53,6 +53,11 @@ const physicalAnswerCopySchema = new Schema(
       type: String,
       default: "",
     },
+    classroom: {
+      type: Schema.Types.ObjectId,
+      ref: "Classroom",
+      
+    },
   },
   {
     timestamps: true,
