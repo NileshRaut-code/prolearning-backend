@@ -13,7 +13,7 @@ import { verifyJWT } from "../middlewares/auth.middlewares.js";
 
 const router = express.Router();
 
-router.post("/classrooms", verifyJWT, createClassroom);
+router.post("/create/classrooms", verifyJWT, createClassroom);
 router.get("/classrooms", verifyJWT, getClassrooms);
 router.get("/classrooms/:id", verifyJWT, getClassroomById);
 router.put("/classrooms/:id", verifyJWT, updateClassroom);
