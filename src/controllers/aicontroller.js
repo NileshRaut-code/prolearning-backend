@@ -6,12 +6,29 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 export const aigen = asyncHandler(async (req, res) => {
     const genAI = new GoogleGenerativeAI(process.env.APIAI);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
- 
-const prompt = "list of 10 question from 10th cbsc ,math , matrix ?";
- 
+const { standard, topic,subject,topiclinedid } = req.query;
+
+if (!standard || !topic) {
+  throw new ApiError(400, "Standard and topic are required.");
+}
+const prompt = `Create 10 questions related to the academic standard ${standard} ,${subject} and topic ${topic}. The questions should follow this schema: { "question": string, "score": number, "difficultyLevel": string (choose from Easy, Medium, Hard), "topicId": string( ${topiclinedid}), "tags": array of strings (Question Askd in exam like "NEET" ,"JEE" ,"Olympid" etc) }. Ensure the questions vary in difficulty and cover different aspects of the topic.Dont add any other than the question `; 
+
 const result = await model.generateContent(prompt);
-console.log(result.response.text());
+const content = result.response.text();
+
+
+const jsonString = content.replace(/```json|```/g, '');
+let questions;
+
+try {
+  questions = JSON.parse(jsonString);
+} catch (error) {
+  throw new ApiError(500, "Failed to parse AI-generated questions.");
+}
+
+
+
     return res
       .status(200)
-      .json(new ApiResponse(200, result, "Ai Generated Results"));
+      .json(new ApiResponse(200, questions, "Ai Generated Results"));
   });
