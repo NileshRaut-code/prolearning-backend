@@ -24,11 +24,17 @@ const physicalTestSchema = new Schema(
         question:{
           type: String,
         },
-        topicId:{
+
+        difficultyLevel:{
           type: String,
+          default:"Easy"
+        },
+        tag:{
+          type:String
         },
         score:{
-          type:Number
+          type:Number,
+          default:1
         }
 
       
