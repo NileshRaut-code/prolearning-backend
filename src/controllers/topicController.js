@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Subject } from "../models/subjectModel.js";
 import { Review } from "../models/reviewModel.js";
 import { ObjectId } from "mongodb";
-
+import redisClient from "../db/redis.js";
 const createTopic = asyncHandler(async (req, res) => {
   const { name, chapterId ,description } = req.body;
 
@@ -37,7 +37,12 @@ const getAllTopics = asyncHandler(async (req, res) => {
 
 const getTopicById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-
+  const cachetopic=await redisClient.get(`topic:${id}`)
+  if(cachetopic){
+    return res
+    .status(200)
+    .json(new ApiResponse(200, JSON.parse(cachetopic), "Cache Topic fetched successfully")); 
+  }
   const topic = await Topic.findById(id).populate('chapter','name').populate('RelatedTopic','name').populate('questions','questionText');
 
   if (!topic) {
@@ -51,12 +56,11 @@ const getTopicById = asyncHandler(async (req, res) => {
   const standard = await Subject.findById(subject._id).populate('standard', 'name');
   const standards = standard.standard;
 
-  // Add the subject to the topic response
   const topicWithSubject = {
     ...topic.toObject(),
     subject: subject ? { _id: subject._id, name: subject.name ,standard:standards.name } : null
   };
-
+  await redisClient.set(`topic:${id}`,JSON.stringify(topicWithSubject))
   return res
     .status(200)
     .json(new ApiResponse(200, topicWithSubject, "Topic fetched successfully"));
