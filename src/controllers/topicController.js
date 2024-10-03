@@ -206,7 +206,7 @@ export const toggleUpvote = asyncHandler(async (req, res) => {
   }
 
   const userIndex = review.upvotes.indexOf(userId);
-  await redisClient.del(`comment:${review.replies_id}`)
+ 
   if (userIndex === -1) {
     review.upvotes.push(userId); // Add upvote
   } else {
@@ -214,10 +214,10 @@ export const toggleUpvote = asyncHandler(async (req, res) => {
   }
 
   await review.save();
-
+  await redisClient.del(`comment:${review.replies_id}`)
   return res
     .status(200)
-    .json(new ApiResponse(200, review, `Upvote toggled successfully ${review.replies_id}`));
+    .json(new ApiResponse(200, review, `Upvote toggled successfully commentid${review.replies_id}`));
 });
 export const subtoggleUpvote = asyncHandler(async (req, res) => {
   const { replies_id } = req.params;
