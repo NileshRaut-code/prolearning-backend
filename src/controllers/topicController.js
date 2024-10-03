@@ -243,7 +243,7 @@ export const subtoggleUpvote = asyncHandler(async (req, res) => {
   }
 
   await review.save();
-
+  await redisClient.del(`comment:${review.topic_id}`)
 
   return res
     .status(200)
