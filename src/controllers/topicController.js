@@ -37,8 +37,8 @@ const getAllTopics = asyncHandler(async (req, res) => {
 
 const getTopicById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-
-  const cachetopic=await redisClient.json.get(`topic:${id}`)
+  
+  const cachetopic=await redisClient.json.get(`topic:${id}`,"$")
   
   if(cachetopic){
     return res
@@ -62,7 +62,9 @@ const getTopicById = asyncHandler(async (req, res) => {
     ...topic.toObject(),
     subject: subject ? { _id: subject._id, name: subject.name ,standard:standards.name } : null
   };
-  await redisClient.json.set(`topic:${id}`,topicWithSubject,{EX:10})
+  console.log(topicWithSubject);
+  
+  await redisClient.json.set(`topic:${id}`,"$",topicWithSubject)
   return res
     .status(200)
     .json(new ApiResponse(200, topicWithSubject, "Topic fetched successfully"));
