@@ -145,11 +145,11 @@ const linkTopics = asyncHandler(async (req, res) => {
 const viewcomment = asyncHandler(async (req, res) => {
   const id = req.params.id;
   console.log(req.params);
-  const cachecomment=await redisClient.get(`comment:${id}`)
+  const cachecomment=await redisClient.json.get(`comment:${id}`,"$")
   if(cachecomment){
     return res
     .status(200)
-    .json(new ApiResponse(200, JSON.parse(reviewdata), "reviews comment fetched"));
+    .json(new ApiResponse(200, cachecomment, "Catched reviews comment fetched"));
   }
   const topicdata = await Topic.findOne({ _id: new ObjectId(id) });
   if (!topicdata) {
@@ -160,6 +160,11 @@ const viewcomment = asyncHandler(async (req, res) => {
   const reviewdata = await Review.find({
     topic_id: new ObjectId(id),
   }).populate({ path: "createdBy", select: "fullName avatar" }).populate({ path: "replies.createdBy", select: "fullName avatar" });
+
+
+  await redisClient.json.set(`comment:${id}`,"$",{reviewdata})
+  await redisClient.expire(`comment:${id}`, 30)
+
   return res
     .status(200)
     .json(new ApiResponse(200, { reviewdata }, "reviews comment fetched"));
