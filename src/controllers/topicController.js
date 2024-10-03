@@ -37,11 +37,13 @@ const getAllTopics = asyncHandler(async (req, res) => {
 
 const getTopicById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const cachetopic=await redisClient.get(`topic:${id}`)
+
+  const cachetopic=await redisClient.json.get(`topic:${id}`)
+  
   if(cachetopic){
     return res
     .status(200)
-    .json(new ApiResponse(200, JSON.parse(cachetopic), "Cache Topic fetched successfully")); 
+    .json(new ApiResponse(200, cachetopic, "Cache Topic fetched successfully")); 
   }
   const topic = await Topic.findById(id).populate('chapter','name').populate('RelatedTopic','name').populate('questions','questionText');
 
@@ -60,7 +62,7 @@ const getTopicById = asyncHandler(async (req, res) => {
     ...topic.toObject(),
     subject: subject ? { _id: subject._id, name: subject.name ,standard:standards.name } : null
   };
-  await redisClient.set(`topic:${id}`,JSON.stringify(topicWithSubject))
+  await redisClient.json.set(`topic:${id}`,topicWithSubject)
   return res
     .status(200)
     .json(new ApiResponse(200, topicWithSubject, "Topic fetched successfully"));
@@ -141,6 +143,12 @@ const linkTopics = asyncHandler(async (req, res) => {
 const viewcomment = asyncHandler(async (req, res) => {
   const id = req.params.id;
   console.log(req.params);
+  const cachecomment=await redisClient.get(`comment:${id}`)
+  if(cachecomment){
+    return res
+    .status(200)
+    .json(new ApiResponse(200, JSON.parse(reviewdata), "reviews comment fetched"));
+  }
   const topicdata = await Topic.findOne({ _id: new ObjectId(id) });
   if (!topicdata) {
     throw new ApiError(404, "No Topic Found");
