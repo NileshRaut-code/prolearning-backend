@@ -214,10 +214,10 @@ export const toggleUpvote = asyncHandler(async (req, res) => {
   }
 
   await review.save();
-  await redisClient.del(`comment:${review.replies_id}`)
+  await redisClient.del(`comment:${review.topic_id}`)
   return res
     .status(200)
-    .json(new ApiResponse(200, review, `Upvote toggled successfully commentid${review.replies_id}`));
+    .json(new ApiResponse(200, review, `Upvote toggled successfully commentid${review.topic_id}`));
 });
 export const subtoggleUpvote = asyncHandler(async (req, res) => {
   const { replies_id } = req.params;
