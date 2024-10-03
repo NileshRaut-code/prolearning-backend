@@ -198,15 +198,15 @@ const createcomment = asyncHandler(async (req, res) => {
 export const toggleUpvote = asyncHandler(async (req, res) => {
   const { reviewId } = req.params;
   const userId = req.user._id;
-
+  
   const review = await Review.findById(reviewId);
-
+  
   if (!review) {
     throw new ApiError(404, "Review not found");
   }
 
   const userIndex = review.upvotes.indexOf(userId);
-
+  await redisClient.del(`comment:${reviewId.replies_id}`)
   if (userIndex === -1) {
     review.upvotes.push(userId); // Add upvote
   } else {
