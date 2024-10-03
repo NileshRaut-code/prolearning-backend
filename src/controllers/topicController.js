@@ -217,7 +217,7 @@ export const toggleUpvote = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, review, "Upvote toggled successfully"));
+    .json(new ApiResponse(200, review, `Upvote toggled successfully ${review.replies_id}`));
 });
 export const subtoggleUpvote = asyncHandler(async (req, res) => {
   const { replies_id } = req.params;
