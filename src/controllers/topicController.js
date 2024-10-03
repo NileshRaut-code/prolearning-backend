@@ -62,9 +62,8 @@ const getTopicById = asyncHandler(async (req, res) => {
     ...topic.toObject(),
     subject: subject ? { _id: subject._id, name: subject.name ,standard:standards.name } : null
   };
-  console.log(topicWithSubject);
   
-  await redisClient.json.set(`topic:${id}`,"$",topicWithSubject)
+  await redisClient.json.set(`topic:${id}`,"$",topicWithSubject,{EX:10})
   return res
     .status(200)
     .json(new ApiResponse(200, topicWithSubject, "Topic fetched successfully"));
