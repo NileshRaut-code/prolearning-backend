@@ -11,6 +11,7 @@ const { standard, topic,subject,topiclinedid,qno } = req.query;
 if (!standard || !topic) {
   throw new ApiError(400, "Standard and topic are required.");
 }
+// board
 const prompt = `Create ${qno} questions related to the academic standard ${standard} ,${subject} and topic ${topic}. The questions should follow this schema: { "question": string, "score": number, "difficultyLevel": string (choose from Easy, Medium, Hard), "topicId": Objectid mongodb( ${topiclinedid}), "tags": array of strings ( like "NEET" ,"JEE" ,"Olympid" etc ,other than tag dont add any tag) }. Ensure the questions vary in difficulty and cover different aspects of the topic.Dont add any other than the question `; 
 
 const result = await model.generateContent(prompt);

@@ -91,7 +91,7 @@ const updateTopic = asyncHandler(async (req, res) => {
   topic.name = name ;
   topic.description = description;
   const updatedTopic = await topic.save();
-
+  await redisClient.del(`topic:${id}`)
   return res
     .status(200)
     .json(new ApiResponse(200, updatedTopic, "Topic updated successfully"));
