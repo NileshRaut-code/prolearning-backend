@@ -22,6 +22,12 @@ const topicSchema = new Schema(
           ref: "Topic",
         },
       ],
+      AIRelatedTopic: [
+        {
+          title: { type: String, required: true },
+          link: { type: String, required: true },
+        },
+      ],
       questions: [
         {
           type: Schema.Types.ObjectId,
