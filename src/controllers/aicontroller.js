@@ -66,15 +66,15 @@ try {
 
   //console.log(questions);
     
-  //topic.AIRelatedTopic.push({ title, link });
+
   questions.map(data => {
     const title = Object.keys(data)[0];
     const link = data[title];
   
-    // Check if the link already exists in AIRelatedTopic
+    
     const isDuplicate = topic.AIRelatedTopic.some(existingItem => existingItem.link === link);
   
-    // If not a duplicate, add to AIRelatedTopic
+  
     if (!isDuplicate) {
       topic.AIRelatedTopic.push({ title, link });
     }

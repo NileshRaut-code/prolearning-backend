@@ -32,6 +32,9 @@ const replySchema = new Schema(
 
 const reviewSchema = new Schema(
   {
+    title: {
+      type: String,
+    },
     topic_id: {
       type: String,
       required: true,
@@ -40,9 +43,7 @@ const reviewSchema = new Schema(
       type: String,
       required: true,
     },
-    title: {
-      type: String,
-    },
+   
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -60,5 +61,8 @@ const reviewSchema = new Schema(
     timestamps: true,
   }
 );
+
+reviewSchema.index({ title: "text", topic_comment: "text" });
+
 
 export const Review = mongoose.model("Review", reviewSchema);

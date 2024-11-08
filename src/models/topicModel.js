@@ -48,5 +48,8 @@ const topicSchema = new Schema(
     }
   );
   
+  topicSchema.index({ name: "text" ,description:"text"});
+
+
   export const Topic = mongoose.model("Topic", topicSchema);
   
