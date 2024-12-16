@@ -22,7 +22,6 @@ const learningPlanSchema = new Schema(
         aiGeneratedQnA: [
           {
             question: { type: String, required: true },
-            answer: { type: String, required: true },
             difficultyLevel: { type: String, enum: ["Easy", "Medium", "Hard"] },
             tags: [String],
           },

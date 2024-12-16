@@ -5,6 +5,8 @@ import { PhysicalTest } from "../models/physicalTestModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary,uploadImageToCloudinary,uploadPdfToCloudinary } from "../utils/cloudinary.js";
 import { Topic } from "../models/topicModel.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { LearningPlan } from "../models/learningplanModel.js";
 const submitAnswerCopy = asyncHandler(async (req, res) => {
   const { studentId, teacherId, testId } = req.body;
 
@@ -64,9 +66,50 @@ const submitAnswerCopy = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, submission, "Answer copy submitted successfully"));
 });
 
+const generateQuestionsForTopic = async (topic) => {
+  const genAI = new GoogleGenerativeAI(process.env.APIAI);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const prompt = `
+    Generate 5 questions and answers for the topic: "${topic.name}".
+    Format: [{"question": "string", "answer": "string", "difficultyLevel": "Easy|Medium|Hard", "tags": ["tag1", "tag2"]}]
+  `;
+
+  try {
+    // AI API call (replace `model.generateContent` with your API method)
+    const aiResponse = await model.generateContent(prompt);
+
+    // Log the raw AI response
+    console.log("Raw AI Response:", aiResponse);
+
+    // Post-process: Remove unwanted characters (e.g., backticks)
+    let cleanResponse = aiResponse.response.text().trim();
+    console.log(aiResponse.response.text());
+    
+    cleanResponse = cleanResponse.replace(/```json|```/g, ""); // Remove Markdown formatting
+
+    // Parse the JSON response
+    const qna = JSON.parse(cleanResponse);
+
+    // Validate the response format
+    if (Array.isArray(qna) && qna.every(q => q.question && q.answer)) {
+      return {
+        topicId: topic._id,
+        topicName: topic.name,
+        aiGeneratedQnA: qna,
+      };
+    } else {
+      console.error("Invalid AI-generated QnA format:", qna);
+      return { topicId: topic._id, topicName: topic.name, aiGeneratedQnA: [] };
+    }
+  } catch (error) {
+    console.error(`AI generation failed for topic: ${topic.name}`, error.message);
+    return { topicId: topic._id, topicName: topic.name, aiGeneratedQnA: [] };
+  }
+};
+
 const gradeAnswerCopy = asyncHandler(async (req, res) => {
   const { answerCopyId, grade, feedback,recommendations,score } = req.body;
-  console.log("score",score);
+  //console.log("score",score);
   
   if (!answerCopyId || !grade || !recommendations) {
     throw new ApiError(404, "All Field are required");
@@ -84,32 +127,15 @@ const gradeAnswerCopy = asyncHandler(async (req, res) => {
 
   let learningPlan;
   if (recommendations && recommendations.length > 0) {
-    // Generate a learning plan if recommendations are present
     const recommendedTopics = recommendations.map((rec) => rec.topicId);
-
-    // Fetch topics
+    
     const topics = await Topic.find({ _id: { $in: recommendedTopics } });
 
     if (topics && topics.length > 0) {
-      // Generate AI-driven Q&A for recommended topics
       const generatedData = await Promise.all(
-        topics.map(async (topic) => {
-          const prompt = `
-            Create 5 questions and answers for the topic: ${topic.name}.
-            Format: { "question": string, "answer": string, "difficultyLevel": string ("Easy", "Medium", "Hard"), "tags": array of strings (keywords or concepts) }.
-          `;
-
-          try {
-            const result = await model.generateContent(prompt);
-            const qna = JSON.parse(result.response.text());
-            return { topicId: topic._id, topicName: topic.name, aiGeneratedQnA: qna };
-          } catch (error) {
-            console.error(`AI generation failed for topic: ${topic.name}`, error);
-            return { topicId: topic._id, topicName: topic.name, aiGeneratedQnA: [] };
-          }
-        })
+        topics.map(async (topic) => await generateQuestionsForTopic(topic))
       );
-
+    
       // Create the learning plan
       learningPlan = new LearningPlan({
         student: req.user._id,
