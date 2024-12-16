@@ -29,6 +29,10 @@ const physicalAnswerCopySchema = new Schema(
       type: Number,
       default: 0
     },
+    planId: {
+      type: Schema.Types.ObjectId,
+      ref: "LearningPlan",
+    },
     recommendations: [
       {
         questionId:{

@@ -5,7 +5,9 @@ const router = express.Router();
 //verifyJWT,
 router.get('/', aigen);
 
-router.get('/tagging', linktagging);
+router.get('/tagging', verifyJWT,linktagging);
 router.post('/chat-bot',chatbot)
+// router.post("/learning-plan", verifyJWT, createLearningPlan);
+
 
 export default router;

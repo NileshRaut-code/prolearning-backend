@@ -81,7 +81,51 @@ const gradeAnswerCopy = asyncHandler(async (req, res) => {
   answerCopy.feedback = feedback;
   answerCopy.recommendations = recommendations;
   answerCopy.score = score;
+
+  let learningPlan;
+  if (recommendations && recommendations.length > 0) {
+    // Generate a learning plan if recommendations are present
+    const recommendedTopics = recommendations.map((rec) => rec.topicId);
+
+    // Fetch topics
+    const topics = await Topic.find({ _id: { $in: recommendedTopics } });
+
+    if (topics && topics.length > 0) {
+      // Generate AI-driven Q&A for recommended topics
+      const generatedData = await Promise.all(
+        topics.map(async (topic) => {
+          const prompt = `
+            Create 5 questions and answers for the topic: ${topic.name}.
+            Format: { "question": string, "answer": string, "difficultyLevel": string ("Easy", "Medium", "Hard"), "tags": array of strings (keywords or concepts) }.
+          `;
+
+          try {
+            const result = await model.generateContent(prompt);
+            const qna = JSON.parse(result.response.text());
+            return { topicId: topic._id, topicName: topic.name, aiGeneratedQnA: qna };
+          } catch (error) {
+            console.error(`AI generation failed for topic: ${topic.name}`, error);
+            return { topicId: topic._id, topicName: topic.name, aiGeneratedQnA: [] };
+          }
+        })
+      );
+
+      // Create the learning plan
+      learningPlan = new LearningPlan({
+        student: req.user._id,
+        recommendedTopics: generatedData,
+      });
+
+      await learningPlan.save();
+
+      // Associate the learning plan with the answer copy
+      answerCopy.planId = learningPlan._id;
+    }
+  }
+
+  // Save the updated answer copy
   await answerCopy.save();
+
 
   return res
     .status(200)

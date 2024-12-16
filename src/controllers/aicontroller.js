@@ -3,6 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Topic } from "../models/topicModel.js";
+import { Review } from "../models/reviewModel.js";
+import { LearningPlan } from "../models/learningplanModel.js";
 let expire=0;
 export const aigen = asyncHandler(async (req, res) => {
     const genAI = new GoogleGenerativeAI(process.env.APIAI);
@@ -84,16 +86,32 @@ try {
   return res.status(200).json(new ApiResponse(200, questions, "AI Tagging Success"));
     
   });
+
   export const chatbot = asyncHandler(async (req, res) => {
 
-    expire++;
-    console.log(expire);
+                                                                                                                                                                  expire++;
+                                                                                                                                                                  console.log(expire);
+    let data={};
     
-    if(expire>=3){
-      return res.status(200).json(new ApiResponse(200, { resultContent:"Your token has exhausted its response quota. No further responses are available at this time." }, "AI Tagging Success"));
-    }
+      if (!req.body.query) {
+        return res.status(400).json({ message: "Search query is required." });
+      }
+   
+        data.results = await Topic.find(
+          { $text: { $search: req.body.query } },
+          { score: { $meta: "textScore" } }
+        ).sort({ score: { $meta: "textScore" } });
+        data.resultscomment = await Review.find(
+            { $text: { $search: req.body.query } },
+            { score: { $meta: "textScore" } }
+          ).sort({ score: { $meta: "textScore" } });
+    
+    
+                                                                                                                                                                    if(expire>=3){
+                                                                                                                                                                      return res.status(200).json(new ApiResponse(200, { resultContent:"Your token has exhausted its response quota. No further responses are available at this time." }, "AI Tagging Success"));
+                                                                                                                                                                    }
     const genAI = new GoogleGenerativeAI(process.env.APIAI);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002" });
     const query = req.body.query;
     
     const prompt = `${query} the response content should in markdown`;
@@ -105,5 +123,56 @@ try {
    // console.log(result);
 
     // Send formatted content in the response
-    return res.status(200).json(new ApiResponse(200, { resultContent }, "AI Tagging Success"));
+    return res.status(200).json(new ApiResponse(200, { resultContent }, "AI search + vector search Success"));
 });
+
+
+
+
+// Controller to Create Learning Plan
+// export const createLearningPlan = asyncHandler(async (req, res) => {
+//   const genAI = new GoogleGenerativeAI(process.env.APIAI);
+// const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+//   const { studentId, recommendedTopics } = req.body;
+
+//   // Validate inputs
+//   if (!studentId || !recommendedTopics || recommendedTopics.length === 0) {
+//     return res.status(400).json({ message: "Student ID and recommended topics are required." });
+//   }
+
+//   // Fetch topic names for the provided topic IDs
+//   const topics = await Topic.find({ _id: { $in: recommendedTopics } });
+
+//   if (!topics || topics.length === 0) {
+//     return res.status(404).json({ message: "No topics found for the provided IDs." });
+//   }
+
+//   // Prepare AI prompt and generate Q&A for each topic
+//   const generatedData = await Promise.all(
+//     topics.map(async (topic) => {
+//       const prompt = `
+//         Create 5 questions and answers for the topic: ${topic.name}.
+//         Format: { "question": string, "answer": string, "difficultyLevel": string ("Easy", "Medium", "Hard"), "tags": array of strings (keywords or concepts) }.
+//       `;
+
+//       try {
+//         const result = await model.generateContent(prompt);
+//         const qna = JSON.parse(result.response.text());
+//         return { topicId: topic._id, topicName: topic.name, aiGeneratedQnA: qna };
+//       } catch (error) {
+//         console.error(`AI generation failed for topic: ${topic.name}`, error);
+//         return { topicId: topic._id, topicName: topic.name, aiGeneratedQnA: [] };
+//       }
+//     })
+//   );
+
+//   // Create the learning plan
+//   const newLearningPlan = new LearningPlan({
+//     student: studentId,
+//     recommendedTopics: generatedData,
+//   });
+
+//   await newLearningPlan.save();
+
+//   return res.status(201).json({ message: "Learning Plan created successfully.", learningPlan: newLearningPlan });
+// });
