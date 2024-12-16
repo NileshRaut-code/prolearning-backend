@@ -4,7 +4,7 @@ import { PhysicalAnswerCopy } from "../models/physicalAnswerCopyModel.js";
 import { PhysicalTest } from "../models/physicalTestModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary,uploadImageToCloudinary,uploadPdfToCloudinary } from "../utils/cloudinary.js";
-
+import { Topic } from "../models/topicModel.js";
 const submitAnswerCopy = asyncHandler(async (req, res) => {
   const { studentId, teacherId, testId } = req.body;
 
