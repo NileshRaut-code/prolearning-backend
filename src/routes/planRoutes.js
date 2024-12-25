@@ -4,7 +4,8 @@ import {
   getLearningPlanById, 
   updateLearningPlan, 
   deleteLearningPlan, 
-  getAllLearningPlans 
+  getAllLearningPlans ,
+  getLearningPlansByStudentId
 } from '../controllers/planController.js';
 
 const router = express.Router();
@@ -23,5 +24,5 @@ router.delete('/:id', deleteLearningPlan);
 
 // Get all learning plans
 router.get('/', getAllLearningPlans);
-
+router.get('/student/:studentId', getLearningPlansByStudentId);
 export default router;

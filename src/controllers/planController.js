@@ -21,7 +21,9 @@ export const createLearningPlan = asyncHandler(async (req, res) => {
 export const getLearningPlanById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const learningPlan = await LearningPlan.findById(id).populate('student').populate('recommendedTopics.topicId');
+  const learningPlan = await LearningPlan.findById(id)
+    .populate('student', '-password -refreshToken')
+    .populate('recommendedTopics.topicId');
 
   if (!learningPlan) {
     throw new ApiError(404, "Learning Plan not found");
@@ -67,7 +69,24 @@ export const deleteLearningPlan = asyncHandler(async (req, res) => {
 
 // Get all learning plans
 export const getAllLearningPlans = asyncHandler(async (req, res) => {
-  const learningPlans = await LearningPlan.find().populate('student').populate('recommendedTopics.topicId');
+  const learningPlans = await LearningPlan.find()
+    .populate('student', '-password -refreshToken')
+    .populate('recommendedTopics.topicId');
+
+  res.status(200).json(learningPlans);
+});
+
+// Get all learning plans by student ID
+export const getLearningPlansByStudentId = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+
+  const learningPlans = await LearningPlan.find({ student: studentId })
+    .populate('student', '-password -refreshToken')
+    .populate('recommendedTopics.topicId');
+
+  if (!learningPlans.length) {
+    throw new ApiError(404, "No Learning Plans found for this student");
+  }
 
   res.status(200).json(learningPlans);
 });
