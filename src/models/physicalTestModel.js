@@ -24,6 +24,10 @@ const physicalTestSchema = new Schema(
         question:{
           type: String,
         },
+      
+          topicId:{
+          type:String,
+        },
 
         difficultyLevel:{
           type: String,
