@@ -35,6 +35,8 @@ import uploadRoutes from './routes/uploadRoutes.js'
 import classroomRoutes from './routes/classroomRoutes.js'
 import aiRoutes from './routes/aiRoutes.js'
 import searchRoutes from  './routes/searchRoutes.js'
+import planRoutes from  './routes/planRoutes.js'
+
 // app.use("/api/v1/users", userRouter);
 app.use('/api/users', userRoutes);
 app.use('/api/standards', standardRoutes);
@@ -50,5 +52,5 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/classroom', classroomRoutes);
 app.use('/api/ai',aiRoutes );
 app.use('/api/search/',searchRoutes);
-
+app.use('/api/plan/',planRoutes)
 export { app };
