@@ -108,54 +108,76 @@ const generateQuestionsForTopic = async (topic) => {
 };
 
 const gradeAnswerCopy = asyncHandler(async (req, res) => {
-  const { answerCopyId, grade, feedback,recommendations,score } = req.body;
-  //console.log("score",score);
-  
+  const { answerCopyId, grade, feedback, recommendations, score } = req.body;
+
   if (!answerCopyId || !grade || !recommendations) {
-    throw new ApiError(404, "All Field are required");
+    throw new ApiError(404, "All fields are required");
   }
+
   const answerCopy = await PhysicalAnswerCopy.findById(answerCopyId);
 
   if (!answerCopy) {
     throw new ApiError(404, "Answer copy not found");
   }
-  // answerCopy.pdfPath = pdfPath;
+
   answerCopy.grade = grade;
   answerCopy.feedback = feedback;
   answerCopy.recommendations = recommendations;
   answerCopy.score = score;
 
-  let learningPlan;
-  if (recommendations && recommendations.length > 0) {
-    const recommendedTopics = recommendations.map((rec) => rec.topicId);
-    
-    const topics = await Topic.find({ _id: { $in: recommendedTopics } });
+  if (!recommendations.length && answerCopy.planId) {
+    await LearningPlan.findByIdAndDelete(answerCopy.planId);
+    answerCopy.planId = null;
+  } else if (recommendations && recommendations.length > 0) {
+    let learningPlan;
 
-    if (topics && topics.length > 0) {
-      const generatedData = await Promise.all(
-        topics.map(async (topic) => await generateQuestionsForTopic(topic))
+    if (answerCopy.planId) {
+      learningPlan = await LearningPlan.findById(answerCopy.planId);
+
+      if (!learningPlan) {
+        throw new ApiError(404, "Learning plan not found");
+      }
+
+      const newTopics = recommendations.filter(
+        (rec) => !learningPlan.recommendedTopics.some((topic) => topic.topicId.equals(rec.topicId))
       );
-    
-      // Create the learning plan
-      learningPlan = new LearningPlan({
-        student: req.user._id,
-        recommendedTopics: generatedData,
-      });
 
-      await learningPlan.save();
+      if (newTopics.length > 0) {
+        const topics = await Topic.find({ _id: { $in: newTopics.map((rec) => rec.topicId) } });
 
-      // Associate the learning plan with the answer copy
-      answerCopy.planId = learningPlan._id;
+        const generatedData = await Promise.all(
+          topics.map(async (topic) => await generateQuestionsForTopic(topic))
+        );
+
+        learningPlan.recommendedTopics.push(...generatedData);
+        await learningPlan.save();
+      }
+    } else {
+      const recommendedTopics = recommendations.map((rec) => rec.topicId);
+
+      const topics = await Topic.find({ _id: { $in: recommendedTopics } });
+
+      if (topics && topics.length > 0) {
+        const generatedData = await Promise.all(
+          topics.map(async (topic) => await generateQuestionsForTopic(topic))
+        );
+
+        learningPlan = new LearningPlan({
+          student: answerCopy.student,
+          recommendedTopics: generatedData,
+        });
+
+        await learningPlan.save();
+        answerCopy.planId = learningPlan._id;
+      }
     }
   }
 
-  // Save the updated answer copy
   await answerCopy.save();
 
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, answerCopy, "Answer copy graded successfully"));
+  return res.status(200).json(
+    new ApiResponse(200, answerCopy, "Answer copy graded successfully")
+  );
 });
 
 const alreadycheck = asyncHandler(async (req, res) => {
