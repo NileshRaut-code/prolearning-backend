@@ -177,8 +177,8 @@ const gradeAnswerCopy = asyncHandler(async (req, res) => {
 
   await answerCopy.save();
   const transporter=nodemailer.createTransport({
-    host: "live.smtp.mailtrap.io",
-    port: 587,
+    host: "sandbox.smtp.mailtrap.io",
+    port: 2525,
     auth: {
       user: process.env.MAIL_ID,
       pass: process.env.MAIL_PASS
