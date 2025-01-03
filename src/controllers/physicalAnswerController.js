@@ -8,14 +8,7 @@ import { Topic } from "../models/topicModel.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { LearningPlan } from "../models/learningplanModel.js";
 import nodemailer from "nodemailer"
-const transporter=nodemailer.createTransport({
-  host: "live.smtp.mailtrap.io",
-  port: 587,
-  auth: {
-    user: process.env.MAIL_ID,
-    pass: process.env.PASS
-  }
-});
+
 const submitAnswerCopy = asyncHandler(async (req, res) => {
   const { studentId, teacherId, testId } = req.body;
 
@@ -183,6 +176,14 @@ const gradeAnswerCopy = asyncHandler(async (req, res) => {
   }
 
   await answerCopy.save();
+  const transporter=nodemailer.createTransport({
+    host: "live.smtp.mailtrap.io",
+    port: 587,
+    auth: {
+      user: process.env.MAIL_ID,
+      pass: process.env.MAIL_PASS
+    }
+  });
   transporter.sendMail({
     from: process.env.MAIL_ID,
     to: "ganya9970@gmail.com",
