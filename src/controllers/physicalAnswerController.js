@@ -7,6 +7,15 @@ import { uploadOnCloudinary,uploadImageToCloudinary,uploadPdfToCloudinary } from
 import { Topic } from "../models/topicModel.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { LearningPlan } from "../models/learningplanModel.js";
+import nodemailer from "nodemailer"
+const transporter=nodemailer.createTransport({
+  host: "live.smtp.mailtrap.io",
+  port: 587,
+  auth: {
+    user: process.env.MAIL_ID,
+    pass: process.env.PASS
+  }
+});
 const submitAnswerCopy = asyncHandler(async (req, res) => {
   const { studentId, teacherId, testId } = req.body;
 
@@ -174,7 +183,12 @@ const gradeAnswerCopy = asyncHandler(async (req, res) => {
   }
 
   await answerCopy.save();
-
+  transporter.sendMail({
+    from: process.env.MAIL_ID,
+    to: "ganya9970@gmail.com",
+    subject: "Grade of your test",
+    text: `Your test has been graded with ${grade} and feedback is ${feedback}`
+  }) 
   return res.status(200).json(
     new ApiResponse(200, answerCopy, "Answer copy graded successfully")
   );
