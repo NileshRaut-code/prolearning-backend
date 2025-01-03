@@ -185,7 +185,7 @@ const gradeAnswerCopy = asyncHandler(async (req, res) => {
     }
   });
   transporter.sendMail({
-    from: process.env.MAIL_ID,
+    from: '"Prolearning Platfrom" <grading@prolearning.com>',
     to: "ganya9970@gmail.com",
     subject: "Grade of your test",
     text: `Your test has been graded with ${grade} and feedback is ${feedback}`
