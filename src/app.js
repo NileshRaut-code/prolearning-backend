@@ -36,6 +36,7 @@ import classroomRoutes from './routes/classroomRoutes.js'
 import aiRoutes from './routes/aiRoutes.js'
 import searchRoutes from  './routes/searchRoutes.js'
 import planRoutes from  './routes/planRoutes.js'
+import genericrouter from "./routes/genericplanRoutes.js";
 
 // app.use("/api/v1/users", userRouter);
 app.use('/api/users', userRoutes);
@@ -53,4 +54,5 @@ app.use('/api/classroom', classroomRoutes);
 app.use('/api/ai',aiRoutes );
 app.use('/api/search/',searchRoutes);
 app.use('/api/plan/',planRoutes)
+app.use('/api/schedular/',genericrouter)
 export { app };
