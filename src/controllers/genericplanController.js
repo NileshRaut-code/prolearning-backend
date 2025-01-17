@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const plangenerate = asyncHandler(
     async(req,res)=>{
+        const {standard}=req.params;
         if (!standard || isNaN(standard)) {
             return res.status(400).json({ error: "Invalid or missing standard parameter." });
           }
