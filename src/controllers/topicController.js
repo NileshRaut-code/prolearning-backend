@@ -8,9 +8,9 @@ import { Review } from "../models/reviewModel.js";
 import { ObjectId } from "mongodb";
 import redisClient from "../db/redis.js";
 const createTopic = asyncHandler(async (req, res) => {
-  const { name, chapterId ,description } = req.body;
+  const { name, chapterId ,description,standard } = req.body;
 
-  if (!name || !chapterId || !description) {
+  if (!name || !chapterId || !description ||!standard) {
     throw new ApiError(400, "Name and chapterId are required");
   }
   const chapter = await Chapter.findById(chapterId);
@@ -19,7 +19,7 @@ const createTopic = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Chapter not found");
   }
 
-  const topic = await Topic.create({ name,description, chapter: chapterId,teacher:req.user._id });
+  const topic = await Topic.create({ name,description, chapter: chapterId,teacher:req.user._id ,standard });
   chapter.topics.push(topic._id);
   await chapter.save();
   return res
