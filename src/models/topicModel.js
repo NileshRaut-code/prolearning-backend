@@ -16,6 +16,11 @@ const topicSchema = new Schema(
         ref: "Chapter",
         required: true,
       },
+      standard: {
+        type: Schema.Types.ObjectId,
+        ref: "Standard",
+      },
+
       RelatedTopic: [
         {
           type: Schema.Types.ObjectId,
