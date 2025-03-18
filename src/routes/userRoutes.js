@@ -9,6 +9,7 @@ import {
   refreshToken,
   logoutUser,
   getCurrentUser,
+  changeStandard
 } from '../controllers/userController.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 
@@ -23,6 +24,7 @@ router.post('/logout',verifyJWT, logoutUser);
 // router.put('/:id',verifyJWT, updateUser);
 router.delete('/:id',verifyJWT, deleteUser);
 router.get('/current-user',verifyJWT, getCurrentUser);
+router.put('/change-standard',verifyJWT, changeStandard);
 
 
 

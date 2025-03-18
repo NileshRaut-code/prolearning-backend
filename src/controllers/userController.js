@@ -209,6 +209,56 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, req.user, "User fetched successfully"));
 });
 
+
+const changeStandard = asyncHandler(async (req, res) => {
+  try {
+    const { standard } = req.body;
+    
+    // Validation checks
+    if (!standard) {
+      throw new ApiError(400, "Standard is required");
+    }
+
+    // Validate standard format (assuming standards are numbers between 1-12)
+    if (!Number.isInteger(Number(standard)) || standard < 1 || standard > 12) {
+      throw new ApiError(400, "Invalid standard. Must be between 1 and 12");
+    }
+
+    // Find and update user
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { standard },
+      {
+        new: true,
+        runValidators: true
+      }
+    ).select("-password -refreshToken");
+
+    if (!updatedUser) {
+      throw new ApiError(404, "User not found");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(
+        200, 
+        updatedUser, 
+        "Standard updated successfully"
+      ));
+
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    
+    throw new ApiError(
+      500, 
+      "Something went wrong while updating standard",
+      error
+    );
+  }
+});
+
 export {
   registerUser,
   loginUser,
@@ -219,4 +269,5 @@ export {
   refreshToken,
   logoutUser,
   getCurrentUser,
+  changeStandard
 };
