@@ -37,7 +37,7 @@ import aiRoutes from './routes/aiRoutes.js'
 import searchRoutes from  './routes/searchRoutes.js'
 import planRoutes from  './routes/planRoutes.js'
 import genericrouter from "./routes/genericplanRoutes.js";
-
+import superRouter from "./routes/superadminRoutes.js"
 // app.use("/api/v1/users", userRouter);
 app.use('/api/users', userRoutes);
 app.use('/api/standards', standardRoutes);
@@ -55,4 +55,5 @@ app.use('/api/ai',aiRoutes );
 app.use('/api/search/',searchRoutes);
 app.use('/api/plan/',planRoutes)
 app.use('/api/schedular/',genericrouter)
+app.use('/api/superadmin/',superRouter)
 export { app };
