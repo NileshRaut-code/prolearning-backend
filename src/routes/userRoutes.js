@@ -9,7 +9,9 @@ import {
   refreshToken,
   logoutUser,
   getCurrentUser,
-  changeStandard
+  changeStandard,
+  GoogleloginUser
+  
 } from '../controllers/userController.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 
@@ -25,6 +27,7 @@ router.post('/logout',verifyJWT, logoutUser);
 router.delete('/:id',verifyJWT, deleteUser);
 router.get('/current-user',verifyJWT, getCurrentUser);
 router.put('/change-standard',verifyJWT, changeStandard);
+router.post('/google-login', GoogleloginUser);
 
 
 

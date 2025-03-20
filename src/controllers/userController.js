@@ -4,7 +4,7 @@ import { User } from "../models/userModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-
+import { OAuth2Client } from "google-auth-library";
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -259,6 +259,54 @@ const changeStandard = asyncHandler(async (req, res) => {
   }
 });
 
+
+const GoogleloginUser = asyncHandler(async (req, res) => {
+
+  const {token} =req.body;
+
+  const client=new OAuth2Client(process.env.CLIENT_ID)
+
+  const ticket=await client.verifyIdToken({
+   idToken: token,audience:process.env.CLIENT_ID
+  })
+
+  const payload=ticket.getPayload()
+
+  const { email } = payload;
+
+  if (!email ) {
+    throw new ApiError(400, "Email is required");
+  }
+
+  const user = await User.findOne({
+    $or: [{ email }],
+  })
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+  const options = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  };
+  res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(200, { loggedInUser, accessToken, refreshToken }, "Login successful")
+    );
+});
+
+
 export {
   registerUser,
   loginUser,
@@ -269,5 +317,6 @@ export {
   refreshToken,
   logoutUser,
   getCurrentUser,
-  changeStandard
+  changeStandard,
+  GoogleloginUser
 };
