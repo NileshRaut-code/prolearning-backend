@@ -5,23 +5,35 @@ import { Topic } from "../models/topicModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createQuestion = asyncHandler(async (req, res) => {
-  const { questionText, topicId, options, correctAnswer } = req.body;
+  const { questionText, topicId, options, correctAnswer, difficultyLevel, score, explanation, tags } = req.body;
 
-  if (!questionText || !topicId || !options || !correctAnswer) {
-    throw new ApiError(400, "All fields are required");
+  if (!questionText || !options || !correctAnswer) {
+    throw new ApiError(400, "Question text, options, and correct answer are required");
   }
 
-  const topic = await Topic.findById(topicId);
-
-  if (!topic) {
-    throw new ApiError(404, "Topic not found");
+  let topic = null;
+  if (topicId) {
+    topic = await Topic.findById(topicId);
+    if (!topic) {
+      throw new ApiError(404, "Topic not found");
+    }
   }
 
-  const question = await Question.create({ questionText, topic: topicId, options, correctAnswer });
+  const question = await Question.create({ 
+    questionText, 
+    topic: topicId, 
+    topicId,
+    options, 
+    correctAnswer,
+    difficultyLevel: difficultyLevel || "Medium",
+    score: score || 1,
+    explanation,
+    tags: tags || []
+  });
   
   const questionid=question._id
 
-  if (!topic.questions.includes(questionid)) {
+  if (topic && !topic.questions.includes(questionid)) {
     topic.questions.push(questionid);
     await topic.save();
   }
@@ -56,7 +68,7 @@ const getQuestionById = asyncHandler(async (req, res) => {
 
 const updateQuestion = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { questionText, topicId, options, correctAnswer } = req.body;
+  const { questionText, topicId, options, correctAnswer, difficultyLevel, score, explanation, tags } = req.body;
 
   const question = await Question.findById(id);
 
@@ -70,11 +82,16 @@ const updateQuestion = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Topic not found");
     }
     question.topic = topicId;
+    question.topicId = topicId;
   }
 
   question.questionText = questionText || question.questionText;
   question.options = options || question.options;
   question.correctAnswer = correctAnswer || question.correctAnswer;
+  question.difficultyLevel = difficultyLevel || question.difficultyLevel;
+  question.score = score !== undefined ? score : question.score;
+  question.explanation = explanation !== undefined ? explanation : question.explanation;
+  question.tags = tags || question.tags;
 
   const updatedQuestion = await question.save();
 

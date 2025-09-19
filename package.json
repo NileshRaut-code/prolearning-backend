@@ -7,7 +7,7 @@
   "scripts": {
     "test": "mocha --recursive tests",
     "start": "node src/index.js",
-    "dev": "cross-env DOTENV_CONFIG_PATH=.env.dev nodemon -r dotenv/config --experimental-json-modules src/index.js "
+    "dev": "cross-env DOTENV_CONFIG_PATH=.env nodemon -r dotenv/config --experimental-json-modules src/index.js "
   },
   "keywords": [
     "learning"

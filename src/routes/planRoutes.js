@@ -4,8 +4,11 @@ import {
   getLearningPlanById, 
   updateLearningPlan, 
   deleteLearningPlan, 
-  getAllLearningPlans ,
-  getLearningPlansByStudentId
+  getAllLearningPlans,
+  getLearningPlansByStudentId,
+  markTopicCompleted,
+  updateTopicProgress,
+  getLearningPlanWithProgress
 } from '../controllers/planController.js';
 
 const router = express.Router();
@@ -24,5 +27,17 @@ router.delete('/:id', deleteLearningPlan);
 
 // Get all learning plans
 router.get('/', getAllLearningPlans);
+
+// Get learning plans by student ID
 router.get('/student/:studentId', getLearningPlansByStudentId);
+
+// Get learning plan with detailed progress
+router.get('/progress/:id', getLearningPlanWithProgress);
+
+// Mark topic as completed
+router.put('/:planId/topic/:topicId/complete', markTopicCompleted);
+
+// Update topic progress
+router.put('/:planId/topic/:topicId/progress', updateTopicProgress);
+
 export default router;

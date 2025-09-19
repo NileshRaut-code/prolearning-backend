@@ -63,6 +63,21 @@ strong:{
       type: Schema.Types.ObjectId,
       ref: "User", 
     },
+    // For students - reference to their parent(s)
+    parentIds: [{
+      type: Schema.Types.ObjectId,
+      ref: "User"
+    }],
+    // For linking verification
+    isLinked: {
+      type: Boolean,
+      default: false
+    },
+    linkingCode: {
+      type: String,
+      unique: true,
+      sparse: true
+    },
   },
   {
     timestamps: true,

@@ -29,6 +29,27 @@ const physicalAnswerCopySchema = new Schema(
       type: Number,
       default: 0
     },
+    status: {
+      type: String,
+      enum: ["submitted", "graded", "passed", "failed", "resubmitted"],
+      default: "submitted"
+    },
+    attempts: {
+      type: Number,
+      default: 1
+    },
+    maxAttempts: {
+      type: Number,
+      default: 3
+    },
+    isPassed: {
+      type: Boolean,
+      default: false
+    },
+    passingScore: {
+      type: Number,
+      default: 60 // percentage
+    },
     planId: {
       type: Schema.Types.ObjectId,
       ref: "LearningPlan",

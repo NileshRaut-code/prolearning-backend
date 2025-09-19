@@ -176,3 +176,94 @@ try {
 
 //   return res.status(201).json({ message: "Learning Plan created successfully.", learningPlan: newLearningPlan });
 // });
+
+export const generateCompleteTest = asyncHandler(async (req, res) => {
+  const genAI = new GoogleGenerativeAI(process.env.APIAI);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  
+  const { standard, subject, topics, questionsPerTopic, difficultyDistribution, testName, timeLimit } = req.body;
+
+  if (!standard || !subject || !topics || !questionsPerTopic) {
+    throw new ApiError(400, "Standard, subject, topics, and questionsPerTopic are required.");
+  }
+
+  const topicDetails = await Topic.find({ _id: { $in: topics } });
+  
+  if (topicDetails.length === 0) {
+    throw new ApiError(404, "No topics found for the provided IDs.");
+  }
+
+  const totalQuestions = topics.length * questionsPerTopic;
+  const distribution = difficultyDistribution || { Easy: 40, Medium: 40, Hard: 20 }; // percentage
+
+  const prompt = `Create a comprehensive test with ${totalQuestions} questions for academic standard ${standard}, subject ${subject}.
+
+Topics to cover: ${topicDetails.map(t => t.name).join(', ')}
+
+Requirements:
+- ${questionsPerTopic} questions per topic
+- Difficulty distribution: ${distribution.Easy}% Easy, ${distribution.Medium}% Medium, ${distribution.Hard}% Hard
+- Include multiple choice questions with 4 options each
+- Each question should have exactly one correct answer
+- Questions should test different cognitive levels (knowledge, comprehension, application, analysis)
+
+Return the response in this exact JSON schema:
+{
+  "testName": "${testName || 'Generated Test'}",
+  "timeLimit": ${timeLimit || 60},
+  "totalQuestions": ${totalQuestions},
+  "questions": [
+    {
+      "questionText": "string",
+      "options": ["option1", "option2", "option3", "option4"],
+      "correctAnswer": "option1",
+      "difficultyLevel": "Easy|Medium|Hard",
+      "topicId": "topicId from provided list",
+      "score": number,
+      "explanation": "brief explanation of correct answer",
+      "tags": ["tag1", "tag2"]
+    }
+  ]
+}
+
+Ensure questions are varied, academically sound, and appropriate for the standard level.`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const content = result.response.text();
+    
+    const jsonString = content.replace(/```json|```/g, '');
+    let testData;
+    
+    try {
+      testData = JSON.parse(jsonString);
+    } catch (error) {
+      throw new ApiError(500, "Failed to parse AI-generated test data.");
+    }
+
+    // Validate and enhance the generated data
+    if (!testData.questions || !Array.isArray(testData.questions)) {
+      throw new ApiError(500, "Invalid test structure generated.");
+    }
+
+    // Ensure each question has a valid topicId
+    testData.questions = testData.questions.map((question, index) => {
+      const topicIndex = Math.floor(index / questionsPerTopic);
+      const topicId = topics[topicIndex] || topics[0];
+      
+      return {
+        ...question,
+        topicId,
+        score: question.score || (question.difficultyLevel === 'Hard' ? 3 : question.difficultyLevel === 'Medium' ? 2 : 1)
+      };
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, testData, "Complete test generated successfully"));
+
+  } catch (error) {
+    console.error("AI test generation error:", error);
+    throw new ApiError(500, "Failed to generate test. Please try again.");
+  }
+});

@@ -38,6 +38,8 @@ import searchRoutes from  './routes/searchRoutes.js'
 import planRoutes from  './routes/planRoutes.js'
 import genericrouter from "./routes/genericplanRoutes.js";
 import superRouter from "./routes/superadminRoutes.js"
+import parentLinkRoutes from './routes/parentLinkRoutes.js';
+import performanceRoutes from './routes/performanceRoutes.js';
 // app.use("/api/v1/users", userRouter);
 app.use('/api/users', userRoutes);
 app.use('/api/standards', standardRoutes);
@@ -56,4 +58,6 @@ app.use('/api/search/',searchRoutes);
 app.use('/api/plan/',planRoutes)
 app.use('/api/schedular/',genericrouter)
 app.use('/api/superadmin/',superRouter)
+app.use('/api/parent-link/', parentLinkRoutes);
+app.use('/api/performance/', performanceRoutes);
 export { app };

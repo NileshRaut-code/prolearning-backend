@@ -40,8 +40,21 @@ const submitAnswerCopy = asyncHandler(async (req, res) => {
   let submission = await PhysicalAnswerCopy.findOne({ test: testId, student: studentId });
 
   if (submission) {
-    // Update the existing submission
-    submission.pdfUrl = pdfUploadResult.url;
+    // Check if student can resubmit
+    if (submission.isPassed) {
+      throw new ApiError(400, "Test already passed. No resubmission allowed.");
+    }
+    
+    if (submission.attempts >= submission.maxAttempts) {
+      throw new ApiError(400, "Maximum attempts reached. Cannot resubmit.");
+    }
+    
+    // Update the existing submission for retry
+    submission.pdfPath = pdfUploadResult.url;
+    submission.attempts += 1;
+    submission.status = "resubmitted";
+    submission.grade = "Not graded";
+    submission.score = 0;
     submission.updatedAt = new Date();
   } else {
     // Create a new submission
@@ -50,6 +63,8 @@ const submitAnswerCopy = asyncHandler(async (req, res) => {
       teacher: teacherId,
       test: testId,
       pdfPath: pdfUploadResult.url,
+      status: "submitted",
+      attempts: 1
     });
   }
 
@@ -122,10 +137,25 @@ const gradeAnswerCopy = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Answer copy not found");
   }
 
+  // Get the test to calculate total marks
+  const test = await PhysicalTest.findById(answerCopy.test);
+  const totalMarks = test ? test.score : 100;
+  const percentage = (score / totalMarks) * 100;
+  
   answerCopy.grade = grade;
   answerCopy.feedback = feedback;
   answerCopy.recommendations = recommendations;
   answerCopy.score = score;
+  answerCopy.status = "graded";
+  
+  // Determine if student passed
+  if (percentage >= answerCopy.passingScore) {
+    answerCopy.isPassed = true;
+    answerCopy.status = "passed";
+  } else {
+    answerCopy.isPassed = false;
+    answerCopy.status = "failed";
+  }
 
   if (!recommendations.length && answerCopy.planId) {
     await LearningPlan.findByIdAndDelete(answerCopy.planId);
@@ -199,17 +229,30 @@ const alreadycheck = asyncHandler(async (req, res) => {
   const { id } = req.params;
   console.log( req.user);
   
-  const answerCopy = await PhysicalAnswerCopy.findOne({ test: id, student: req.user._id });
-
-  // .populate("recommendations.topicId")
+  const answerCopy = await PhysicalAnswerCopy.findOne({ test: id, student: req.user._id })
+    .populate('test', 'name score');
 
   if (!answerCopy) {
-    throw new ApiError(404, "Answer copy not found");
+    return res
+      .status(200)
+      .json(new ApiResponse(200, null, "No submission found"));
   }
+
+  // Calculate additional info
+  const canRetry = !answerCopy.isPassed && answerCopy.attempts < answerCopy.maxAttempts;
+  const remainingAttempts = answerCopy.maxAttempts - answerCopy.attempts;
+  
+  const responseData = {
+    ...answerCopy.toObject(),
+    canRetry,
+    remainingAttempts,
+    isCompleted: answerCopy.isPassed,
+    needsGrading: answerCopy.status === "submitted" || answerCopy.status === "resubmitted"
+  };
 
   return res
     .status(200)
-    .json(new ApiResponse(200, answerCopy, "Answer copy fetched successfully"));
+    .json(new ApiResponse(200, responseData, "Answer copy status fetched successfully"));
 });
 const getAnswerCopy = asyncHandler(async (req, res) => {
   const { answerCopyId } = req.params;

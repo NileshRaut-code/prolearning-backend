@@ -90,3 +90,120 @@ export const getLearningPlansByStudentId = asyncHandler(async (req, res) => {
 
   res.status(200).json(learningPlans);
 });
+
+// Mark a topic as completed in a learning plan
+export const markTopicCompleted = asyncHandler(async (req, res) => {
+  const { planId, topicId } = req.params;
+  const { progress = 100 } = req.body;
+
+  const learningPlan = await LearningPlan.findById(planId);
+
+  if (!learningPlan) {
+    throw new ApiError(404, "Learning Plan not found");
+  }
+
+  const topicIndex = learningPlan.recommendedTopics.findIndex(
+    topic => topic.topicId.toString() === topicId
+  );
+
+  if (topicIndex === -1) {
+    throw new ApiError(404, "Topic not found in this learning plan");
+  }
+
+  // Update topic completion status
+  learningPlan.recommendedTopics[topicIndex].isCompleted = true;
+  learningPlan.recommendedTopics[topicIndex].completedAt = new Date();
+  learningPlan.recommendedTopics[topicIndex].progress = progress;
+
+  await learningPlan.save();
+
+  const updatedPlan = await LearningPlan.findById(planId)
+    .populate('student', '-password -refreshToken')
+    .populate('recommendedTopics.topicId');
+
+  res.status(200).json({
+    success: true,
+    message: "Topic marked as completed",
+    data: updatedPlan
+  });
+});
+
+// Update topic progress in a learning plan
+export const updateTopicProgress = asyncHandler(async (req, res) => {
+  const { planId, topicId } = req.params;
+  const { progress } = req.body;
+
+  if (progress < 0 || progress > 100) {
+    throw new ApiError(400, "Progress must be between 0 and 100");
+  }
+
+  const learningPlan = await LearningPlan.findById(planId);
+
+  if (!learningPlan) {
+    throw new ApiError(404, "Learning Plan not found");
+  }
+
+  const topicIndex = learningPlan.recommendedTopics.findIndex(
+    topic => topic.topicId.toString() === topicId
+  );
+
+  if (topicIndex === -1) {
+    throw new ApiError(404, "Topic not found in this learning plan");
+  }
+
+  // Update topic progress
+  learningPlan.recommendedTopics[topicIndex].progress = progress;
+  
+  // Mark as completed if progress is 100%
+  if (progress === 100) {
+    learningPlan.recommendedTopics[topicIndex].isCompleted = true;
+    learningPlan.recommendedTopics[topicIndex].completedAt = new Date();
+  } else {
+    learningPlan.recommendedTopics[topicIndex].isCompleted = false;
+    learningPlan.recommendedTopics[topicIndex].completedAt = null;
+  }
+
+  await learningPlan.save();
+
+  const updatedPlan = await LearningPlan.findById(planId)
+    .populate('student', '-password -refreshToken')
+    .populate('recommendedTopics.topicId');
+
+  res.status(200).json({
+    success: true,
+    message: "Topic progress updated",
+    data: updatedPlan
+  });
+});
+
+// Get learning plan with detailed progress
+export const getLearningPlanWithProgress = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const learningPlan = await LearningPlan.findById(id)
+    .populate('student', '-password -refreshToken')
+    .populate('recommendedTopics.topicId');
+
+  if (!learningPlan) {
+    throw new ApiError(404, "Learning Plan not found");
+  }
+
+  // Calculate additional statistics
+  const stats = {
+    totalTopics: learningPlan.totalTopicsCount,
+    completedTopics: learningPlan.completedTopicsCount,
+    pendingTopics: learningPlan.totalTopicsCount - learningPlan.completedTopicsCount,
+    overallProgress: learningPlan.overallProgress,
+    status: learningPlan.status,
+    createdAt: learningPlan.createdAt,
+    completedAt: learningPlan.completedAt,
+    timeSpent: learningPlan.completedAt ? 
+      Math.ceil((learningPlan.completedAt - learningPlan.createdAt) / (1000 * 60 * 60 * 24)) : null
+  };
+
+  res.status(200).json({
+    success: true,
+    data: learningPlan,
+    stats
+  });
+});

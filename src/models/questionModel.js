@@ -16,10 +16,30 @@ const questionSchema = new Schema(
         type: String,
         required: true,
       },
+      difficultyLevel: {
+        type: String,
+        enum: ["Easy", "Medium", "Hard"],
+        default: "Medium",
+      },
+      score: {
+        type: Number,
+        default: 1,
+      },
+      explanation: {
+        type: String,
+      },
+      tags: [
+        {
+          type: String,
+        },
+      ],
       topic: {
         type: Schema.Types.ObjectId,
         ref: "Topic",
-        required: true,
+      },
+      topicId: {
+        type: Schema.Types.ObjectId,
+        ref: "Topic",
       },
     },
     {
@@ -28,4 +48,3 @@ const questionSchema = new Schema(
   );
   
   export const Question = mongoose.model("Question", questionSchema);
-  
