@@ -8,7 +8,7 @@ import { LearningPlan } from "../models/learningplanModel.js";
 let expire=0;
 export const aigen = asyncHandler(async (req, res) => {
     const genAI = new GoogleGenerativeAI(process.env.APIAI);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 const { standard, topic,subject,topiclinedid,qno } = req.query;
 
 if (!standard || !topic) {
@@ -111,7 +111,7 @@ try {
                                                                                                                                                                       return res.status(200).json(new ApiResponse(200, { resultContent:"Your token has exhausted its response quota. No further responses are available at this time." }, "AI Tagging Success"));
                                                                                                                                                                     }
     const genAI = new GoogleGenerativeAI(process.env.APIAI);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-002" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
     const query = req.body.query;
     
     const prompt = `${query} the response content should in markdown`;
@@ -179,7 +179,7 @@ try {
 
 export const generateCompleteTest = asyncHandler(async (req, res) => {
   const genAI = new GoogleGenerativeAI(process.env.APIAI);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
   
   const { standard, subject, topics, questionsPerTopic, difficultyDistribution, testName, timeLimit } = req.body;
 
